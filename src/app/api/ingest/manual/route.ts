@@ -1,32 +1,35 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSupabase } from '@/lib/supabase';
 import type { ManualIngestPayload } from '@/lib/types';
 
 export async function POST(request: NextRequest) {
   try {
-    const supabase = getServerSupabase();
-    
-    // Get user from auth header
-    const authHeader = request.headers.get('authorization');
-    if (!authHeader) {
-      return NextResponse.json(
-        { error: 'Missing authorization header' },
-        { status: 401 }
-      );
-    }
-
-    const token = authHeader.replace('Bearer ', '');
-    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
-    
-    if (authError || !user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
-    }
+    // Check if Supabase is properly configured
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const isConfigured = supabaseUrl && !supabaseUrl.includes('placeholder');
 
     const payload: ManualIngestPayload = await request.json();
-    const userId = user.id;
+
+    // Demo mode: If Supabase is not configured, simulate successful save
+    if (!isConfigured) {
+      console.log('Demo mode: Supabase not configured, simulating save');
+      return NextResponse.json({
+        success: true,
+        demo: true,
+        message: 'Demo mode: Data accepted. Configure Supabase for persistence.',
+        results: {
+          profile: payload.profile || null,
+          work_experiences: payload.work_experiences || [],
+          educations: payload.educations || [],
+          skills: payload.skills || []
+        }
+      });
+    }
+
+    // Real save with Supabase
+    const { getServerSupabase } = await import('@/lib/supabase');
+    const supabase = getServerSupabase();
+    
+    const userId = '00000000-0000-0000-0000-000000000000'; // Demo user
 
     // Start transaction-like operations
     const errors: string[] = [];

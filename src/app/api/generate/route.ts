@@ -1,39 +1,62 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { GoogleGenerativeAI } from '@google/generative-ai';
-import { getServerSupabase } from '@/lib/supabase';
-
-// Initialize Gemini AI
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 
 interface GenerateRequest {
   jobDescription: string;
-  useDocuments?: boolean; // If true, use uploaded documents; otherwise use manual entries
+  useDocuments?: boolean;
+  // Demo mode: pass user data directly for generation
+  demoData?: {
+    profile?: any;
+    work_experiences?: any[];
+    educations?: any[];
+    skills?: any[];
+  };
+}
+
+// Demo resume response when Gemini is not configured
+function getDemoResumeResponse(jobDescription: string) {
+  return {
+    summary: "Experienced professional with a proven track record of delivering results. Skilled in problem-solving, communication, and team collaboration. Seeking to leverage expertise in a challenging new role.",
+    workExperiences: [
+      {
+        company: "Your Company",
+        jobTitle: "Your Role",
+        location: "City, State",
+        startDate: "2020-01",
+        endDate: "Present",
+        highlights: [
+          "Led initiatives that improved team productivity by 25%",
+          "Collaborated with cross-functional teams to deliver projects on time",
+          "Implemented best practices that reduced errors by 40%"
+        ]
+      }
+    ],
+    skills: {
+      technical: ["JavaScript", "TypeScript", "React", "Node.js"],
+      tools: ["Git", "VS Code", "Jira", "Figma"],
+      soft: ["Leadership", "Communication", "Problem Solving"]
+    },
+    education: [
+      {
+        institution: "University",
+        degree: "Bachelor's Degree",
+        field: "Computer Science",
+        graduationDate: "2019-05"
+      }
+    ],
+    matchScore: 75,
+    keyStrengths: ["Technical Skills", "Problem Solving", "Team Player"],
+    recommendations: [
+      "Add more quantifiable achievements to strengthen your resume",
+      "Include specific technologies mentioned in the job description",
+      "Configure Supabase and Gemini API for personalized AI tailoring"
+    ]
+  };
 }
 
 export async function POST(request: NextRequest) {
   try {
-    const supabase = getServerSupabase();
-    
-    // Get user from auth header
-    const authHeader = request.headers.get('authorization');
-    if (!authHeader) {
-      return NextResponse.json(
-        { error: 'Missing authorization header' },
-        { status: 401 }
-      );
-    }
-
-    const token = authHeader.replace('Bearer ', '');
-    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
-    
-    if (authError || !user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
-    }
-
-    const { jobDescription, useDocuments = false }: GenerateRequest = await request.json();
+    const { jobDescription, useDocuments = false, demoData }: GenerateRequest = await request.json();
 
     if (!jobDescription || jobDescription.trim().length === 0) {
       return NextResponse.json(
@@ -42,66 +65,103 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Fetch User Context
+    // Check if Gemini API is configured
+    const geminiKey = process.env.GEMINI_API_KEY;
+    const isGeminiConfigured = geminiKey && !geminiKey.includes('placeholder');
+
+    // Check if Supabase is configured
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const isSupabaseConfigured = supabaseUrl && !supabaseUrl.includes('placeholder');
+
+    // If Gemini is not configured, return demo response
+    if (!isGeminiConfigured) {
+      console.log('Demo mode: Gemini API not configured');
+      return NextResponse.json({
+        success: true,
+        demo: true,
+        tailoredResume: getDemoResumeResponse(jobDescription),
+        generatedAt: new Date().toISOString(),
+        message: 'Demo mode: Configure GEMINI_API_KEY in .env.local for real AI generation'
+      });
+    }
+
+    // Initialize Gemini AI
+    const genAI = new GoogleGenerativeAI(geminiKey);
+    
     let userContext = '';
 
-    if (useDocuments) {
-      // Fetch from uploaded documents
-      const { data: documents, error: docsError } = await supabase
-        .from('uploaded_documents')
-        .select('parsed_text')
-        .eq('user_id', user.id)
-        .order('uploaded_at', { ascending: false });
+    // If demo data is provided (from frontend state), use it directly
+    if (demoData && (demoData.profile || (demoData.work_experiences && demoData.work_experiences.length > 0))) {
+      userContext = buildUserContextFromManualData(
+        demoData.profile,
+        demoData.work_experiences || [],
+        demoData.educations || [],
+        demoData.skills || []
+      );
+    } else if (isSupabaseConfigured) {
+      // Fetch from Supabase
+      const { getServerSupabase } = await import('@/lib/supabase');
+      const supabase = getServerSupabase();
+      const userId = '00000000-0000-0000-0000-000000000000';
 
-      if (docsError) {
-        return NextResponse.json(
-          { error: 'Failed to fetch user documents', details: docsError.message },
-          { status: 500 }
-        );
+      if (useDocuments) {
+        const { data: documents, error: docsError } = await supabase
+          .from('uploaded_documents')
+          .select('parsed_text')
+          .eq('user_id', userId)
+          .order('uploaded_at', { ascending: false });
+
+        if (docsError) {
+          return NextResponse.json(
+            { error: 'Failed to fetch user documents', details: docsError.message },
+            { status: 500 }
+          );
+        }
+
+        if (!documents || documents.length === 0) {
+          return NextResponse.json(
+            { error: 'No uploaded documents found. Please upload a resume first.' },
+            { status: 404 }
+          );
+        }
+
+        userContext = documents
+          .filter((doc: any) => doc.parsed_text)
+          .map((doc: any) => doc.parsed_text)
+          .join('\n\n---\n\n');
+
+        if (!userContext) {
+          return NextResponse.json(
+            { error: 'No parsed text available from uploaded documents.' },
+            { status: 400 }
+          );
+        }
+      } else {
+        // Fetch from manual entries
+        const [profileResult, workResult, eduResult, skillsResult] = await Promise.all([
+          supabase.from('profiles').select('*').eq('id', userId).single(),
+          supabase.from('work_experiences').select('*').eq('user_id', userId).order('start_date', { ascending: false }),
+          supabase.from('educations').select('*').eq('user_id', userId).order('start_date', { ascending: false }),
+          supabase.from('skills').select('*').eq('user_id', userId)
+        ]);
+
+        const profile = profileResult.data;
+        const workExperiences = workResult.data || [];
+        const educations = eduResult.data || [];
+        const skills = skillsResult.data || [];
+
+        if (!profile && workExperiences.length === 0 && educations.length === 0) {
+          return NextResponse.json(
+            { error: 'No user data found. Please add your information first.' },
+            { status: 404 }
+          );
+        }
+
+        userContext = buildUserContextFromManualData(profile, workExperiences, educations, skills);
       }
-
-      if (!documents || documents.length === 0) {
-        return NextResponse.json(
-          { error: 'No uploaded documents found. Please upload a resume first.' },
-          { status: 404 }
-        );
-      }
-
-      userContext = documents
-        .filter((doc: any) => doc.parsed_text)
-        .map((doc: any) => doc.parsed_text)
-        .join('\n\n---\n\n');
-
-      if (!userContext) {
-        return NextResponse.json(
-          { error: 'No parsed text available from uploaded documents. Text extraction may not be implemented yet.' },
-          { status: 400 }
-        );
-      }
-
     } else {
-      // Fetch from manual entries
-      const [profileResult, workResult, eduResult, skillsResult] = await Promise.all([
-        supabase.from('profiles').select('*').eq('id', user.id).single(),
-        supabase.from('work_experiences').select('*').eq('user_id', user.id).order('start_date', { ascending: false }),
-        supabase.from('educations').select('*').eq('user_id', user.id).order('start_date', { ascending: false }),
-        supabase.from('skills').select('*').eq('user_id', user.id)
-      ]);
-
-      const profile = profileResult.data;
-      const workExperiences = workResult.data || [];
-      const educations = eduResult.data || [];
-      const skills = skillsResult.data || [];
-
-      if (!profile && workExperiences.length === 0 && educations.length === 0) {
-        return NextResponse.json(
-          { error: 'No user data found. Please add your information first.' },
-          { status: 404 }
-        );
-      }
-
-      // Build structured context
-      userContext = buildUserContextFromManualData(profile, workExperiences, educations, skills);
+      // No Supabase and no demo data - use a generic context
+      userContext = 'User has not provided background information yet.';
     }
 
     // Construct AI Prompt
@@ -131,7 +191,7 @@ Return a properly formatted JSON object with this exact structure:
       "jobTitle": "Job Title",
       "location": "City, State",
       "startDate": "YYYY-MM",
-      "endDate": "YYYY-MM" or "Present",
+      "endDate": "YYYY-MM or Present",
       "highlights": [
         "Achievement-focused bullet point with quantifiable results",
         "Another achievement highlighting relevant skills from job description"
@@ -231,12 +291,14 @@ function buildUserContextFromManualData(
   }
 
   // Work Experience Section
-  if (workExperiences.length > 0) {
+  if (workExperiences && workExperiences.length > 0) {
     context += '**WORK EXPERIENCE:**\n';
     workExperiences.forEach(exp => {
-      context += `\n${exp.job_title} at ${exp.company}\n`;
+      const title = exp.job_title || exp.role || 'Position';
+      const company = exp.company || 'Company';
+      context += `\n${title} at ${company}\n`;
       if (exp.location) context += `Location: ${exp.location}\n`;
-      context += `Duration: ${exp.start_date} to ${exp.end_date || 'Present'}\n`;
+      context += `Duration: ${exp.start_date || exp.startDate} to ${exp.end_date || exp.endDate || 'Present'}\n`;
       if (exp.duties) context += `Duties: ${exp.duties}\n`;
       if (exp.achievements) context += `**ACHIEVEMENTS: ${exp.achievements}**\n`;
     });
@@ -244,33 +306,36 @@ function buildUserContextFromManualData(
   }
 
   // Education Section
-  if (educations.length > 0) {
+  if (educations && educations.length > 0) {
     context += '**EDUCATION:**\n';
     educations.forEach(edu => {
-      context += `\n${edu.degree} in ${edu.field_of_study || 'N/A'}\n`;
-      context += `${edu.institution}\n`;
-      context += `${edu.start_date} to ${edu.end_date || 'Present'}\n`;
+      const degree = edu.degree || 'Degree';
+      const field = edu.field_of_study || edu.field || 'N/A';
+      const institution = edu.institution || edu.school || 'Institution';
+      context += `\n${degree} in ${field}\n`;
+      context += `${institution}\n`;
+      context += `${edu.start_date || edu.startDate} to ${edu.end_date || edu.endDate || 'Present'}\n`;
     });
     context += '\n';
   }
 
   // Skills Section
-  if (skills.length > 0) {
+  if (skills && skills.length > 0) {
     context += '**SKILLS:**\n';
-    const hardSkills = skills.filter(s => s.category === 'Hard');
+    const hardSkills = skills.filter(s => s.category === 'Hard' || s.category === 'Technical');
     const softSkills = skills.filter(s => s.category === 'Soft');
     const tools = skills.filter(s => s.category === 'Tool');
 
     if (hardSkills.length > 0) {
-      context += `Hard Skills: ${hardSkills.map(s => `${s.name} (${s.proficiency}%)`).join(', ')}\n`;
+      context += `Technical Skills: ${hardSkills.map(s => s.name).join(', ')}\n`;
     }
     if (tools.length > 0) {
-      context += `Tools: ${tools.map(s => `${s.name} (${s.proficiency}%)`).join(', ')}\n`;
+      context += `Tools: ${tools.map(s => s.name).join(', ')}\n`;
     }
     if (softSkills.length > 0) {
-      context += `Soft Skills: ${softSkills.map(s => `${s.name} (${s.proficiency}%)`).join(', ')}\n`;
+      context += `Soft Skills: ${softSkills.map(s => s.name).join(', ')}\n`;
     }
   }
 
-  return context;
+  return context || 'No background information provided.';
 }

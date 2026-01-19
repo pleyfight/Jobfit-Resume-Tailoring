@@ -6,6 +6,65 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[]
 
+// Application-level types
+export interface UserProfile {
+  id: string;
+  fullName: string;
+  dob: string; // ISO Date
+  phone: string;
+  email: string;
+  links: { linkedin?: string; portfolio?: string };
+  languages: Array<{ language: string; level: string }>;
+  certifications: Array<{ name: string; authority: string; year: string }>;
+}
+
+export interface WorkExperience {
+  id?: string;
+  company: string;
+  role: string;
+  location?: string;
+  startDate: string;
+  endDate?: string;
+  isCurrent: boolean;
+  duties: string;
+  achievements: string; // "I increased X by Y%"
+}
+
+export interface Education {
+  id?: string;
+  school: string;
+  degree: string;
+  field: string;
+  startDate: string;
+  endDate: string;
+}
+
+export interface Skill {
+  id?: string;
+  name: string;
+  category: 'Technical' | 'Soft' | 'Tool';
+  level: number;
+}
+
+// Union type for the AI Context Source
+export type ResumeContext = 
+  | { type: 'manual'; data: { profile: UserProfile; work: WorkExperience[]; edu: Education[]; skills: Skill[] } }
+  | { type: 'document'; text: string };
+
+export interface GeneratedResume {
+  id: string;
+  userId: string;
+  targetJobDescription: string;
+  tailoredJson: {
+    profile: UserProfile;
+    experience: WorkExperience[];
+    education: Education[];
+    skills: Skill[];
+    summary: string;
+  };
+  createdAt: string;
+}
+
 export interface Database {
   public: {
     Tables: {
@@ -182,6 +241,29 @@ export interface Database {
           file_url?: string
           parsed_text?: string | null
           uploaded_at?: string
+        }
+      }
+      generated_resumes: {
+        Row: {
+          id: string
+          user_id: string
+          target_job_description: string
+          tailored_json: Json
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          target_job_description: string
+          tailored_json: Json
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          target_job_description?: string
+          tailored_json?: Json
+          created_at?: string
         }
       }
     }
