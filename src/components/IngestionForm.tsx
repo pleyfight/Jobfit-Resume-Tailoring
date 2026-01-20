@@ -1,11 +1,12 @@
-'use client';
+﻿'use client';
 
-import { useState, useCallback } from 'react';
-import { Upload, Plus, Trash2 } from 'lucide-react';
+import { useState, useCallback, useEffect } from 'react';
+import { Upload, Plus, Trash2, CheckCircle, X } from 'lucide-react';
 
 interface IngestionFormProps {
   onContextTypeChange: (useDocuments: boolean) => void;
   useDocuments: boolean;
+  onFormDataChange?: (data: FormData) => void;
 }
 
 interface WorkExp {
@@ -33,11 +34,28 @@ interface Skill {
   proficiency: number;
 }
 
-export function IngestionForm({ onContextTypeChange, useDocuments }: IngestionFormProps) {
+interface FormData {
+  profile: {
+    full_name: string;
+    date_of_birth: string;
+    phone: string;
+    email: string;
+    linkedin_url: string;
+    portfolio_url: string;
+    summary_bio: string;
+  };
+  work_experiences: WorkExp[];
+  educations: Education[];
+  skills: Skill[];
+}
+
+export function IngestionForm({ onContextTypeChange, useDocuments, onFormDataChange }: IngestionFormProps) {
   const [activeTab, setActiveTab] = useState<'upload' | 'manual'>('manual');
   const [uploadProgress, setUploadProgress] = useState(0);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [showSuccessToast, setShowSuccessToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
 
   // Manual entry state
   const [profile, setProfile] = useState({
@@ -75,6 +93,28 @@ export function IngestionForm({ onContextTypeChange, useDocuments }: IngestionFo
     proficiency: 50,
   }]);
 
+  // Notify parent of form data changes
+  useEffect(() => {
+    if (onFormDataChange) {
+      onFormDataChange({
+        profile,
+        work_experiences: workExperiences,
+        educations,
+        skills,
+      });
+    }
+  }, [profile, workExperiences, educations, skills, onFormDataChange]);
+
+  // Auto-dismiss toast after 20 seconds
+  useEffect(() => {
+    if (showSuccessToast) {
+      const timer = setTimeout(() => {
+        setShowSuccessToast(false);
+      }, 20000);
+      return () => clearTimeout(timer);
+    }
+  }, [showSuccessToast]);
+
   const handleTabChange = (tab: 'upload' | 'manual') => {
     setActiveTab(tab);
     onContextTypeChange(tab === 'upload');
@@ -84,7 +124,7 @@ export function IngestionForm({ onContextTypeChange, useDocuments }: IngestionFo
     setUploadedFile(file);
     setUploadProgress(30);
 
-    const formData = new FormData();
+    const formData = new window.FormData();
     formData.append('file', file);
 
     try {
@@ -103,14 +143,13 @@ export function IngestionForm({ onContextTypeChange, useDocuments }: IngestionFo
 
       setUploadProgress(100);
       
-      if (data.demo) {
-        alert('✅ Demo Mode: File accepted!\n\nTo enable real uploads, configure your Supabase credentials in .env.local');
-      } else {
-        alert('Resume uploaded successfully!');
-      }
+      // Show success toast instead of alert
+      setToastMessage(` Upload Complete: ${file.name}`);
+      setShowSuccessToast(true);
     } catch (error) {
       console.error('Upload error:', error);
-      alert(error instanceof Error ? error.message : 'Upload failed');
+      setToastMessage(` Upload Failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      setShowSuccessToast(true);
       setUploadProgress(0);
       setUploadedFile(null);
     }
@@ -124,7 +163,8 @@ export function IngestionForm({ onContextTypeChange, useDocuments }: IngestionFo
     if (file && (file.type === 'application/pdf' || file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document')) {
       handleFileUpload(file);
     } else {
-      alert('Please upload a PDF or DOCX file');
+      setToastMessage(' Please upload a PDF or DOCX file');
+      setShowSuccessToast(true);
     }
   }, []);
 
@@ -149,15 +189,35 @@ export function IngestionForm({ onContextTypeChange, useDocuments }: IngestionFo
         throw new Error(data.error || 'Failed to save data');
       }
 
-      alert('Data saved successfully!');
+      setToastMessage(' Information saved successfully!');
+      setShowSuccessToast(true);
     } catch (error) {
       console.error('Save error:', error);
-      alert(error instanceof Error ? error.message : 'Failed to save data');
+      setToastMessage(` Failed to save: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      setShowSuccessToast(true);
     }
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-[#E5E5E5] overflow-hidden">
+    <div className="bg-white rounded-lg shadow-sm border border-[#E5E5E5] overflow-hidden relative">
+      {/* Success Toast */}
+      {showSuccessToast && (
+        <div className="absolute top-4 left-4 right-4 z-50 animate-in fade-in slide-in-from-top-2">
+          <div className="bg-white border border-green-200 shadow-lg rounded-lg p-4 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <CheckCircle className="w-5 h-5 text-green-600" />
+              <span className="text-sm font-medium text-[#2D2D2D]">{toastMessage}</span>
+            </div>
+            <button
+              onClick={() => setShowSuccessToast(false)}
+              className="text-gray-400 hover:text-gray-600"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Tabs */}
       <div className="flex border-b border-[#E5E5E5]">
         <button
@@ -244,7 +304,7 @@ export function IngestionForm({ onContextTypeChange, useDocuments }: IngestionFo
             <details className="group" open>
               <summary className="flex justify-between items-center cursor-pointer list-none font-serif text-lg font-semibold text-[#2D2D2D] mb-4">
                 Basic Information
-                <span className="text-[#999] group-open:rotate-180 transition-transform">▼</span>
+                <span className="text-[#999] group-open:rotate-180 transition-transform"></span>
               </summary>
               <div className="space-y-4">
                 <input
@@ -270,13 +330,6 @@ export function IngestionForm({ onContextTypeChange, useDocuments }: IngestionFo
                     className="px-4 py-2 border border-[#D1D1D1] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2D2D2D]"
                   />
                 </div>
-                <input
-                  type="date"
-                  placeholder="Date of Birth"
-                  value={profile.date_of_birth}
-                  onChange={(e) => setProfile({ ...profile, date_of_birth: e.target.value })}
-                  className="w-full px-4 py-2 border border-[#D1D1D1] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2D2D2D]"
-                />
                 <input
                   type="url"
                   placeholder="LinkedIn URL"
@@ -305,7 +358,7 @@ export function IngestionForm({ onContextTypeChange, useDocuments }: IngestionFo
             <details className="group">
               <summary className="flex justify-between items-center cursor-pointer list-none font-serif text-lg font-semibold text-[#2D2D2D] mb-4">
                 Work Experience
-                <span className="text-[#999] group-open:rotate-180 transition-transform">▼</span>
+                <span className="text-[#999] group-open:rotate-180 transition-transform"></span>
               </summary>
               <div className="space-y-4">
                 {workExperiences.map((exp, index) => (
@@ -405,7 +458,7 @@ export function IngestionForm({ onContextTypeChange, useDocuments }: IngestionFo
                       className="w-full px-3 py-2 border border-[#D1D1D1] rounded focus:outline-none focus:ring-2 focus:ring-[#2D2D2D] resize-none"
                     />
                     <textarea
-                      placeholder="🌟 Key Achievements (I increased X by Y%, Led Z initiative...)"
+                      placeholder=" Key Achievements (I increased X by Y%, Led Z initiative...)"
                       value={exp.achievements}
                       onChange={(e) => {
                         const updated = [...workExperiences];
@@ -440,7 +493,7 @@ export function IngestionForm({ onContextTypeChange, useDocuments }: IngestionFo
             <details className="group">
               <summary className="flex justify-between items-center cursor-pointer list-none font-serif text-lg font-semibold text-[#2D2D2D] mb-4">
                 Education & Skills
-                <span className="text-[#999] group-open:rotate-180 transition-transform">▼</span>
+                <span className="text-[#999] group-open:rotate-180 transition-transform"></span>
               </summary>
               <div className="space-y-4">
                 <div className="space-y-3">

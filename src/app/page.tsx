@@ -1,5 +1,5 @@
-import Link from "next/link";
-import { Sparkles, Target, Zap, CheckCircle, TrendingUp, FileText } from "lucide-react";
+﻿import Link from "next/link";
+import { Sparkles, Target, Zap, CheckCircle, TrendingUp, FileText, Clock, Shield } from "lucide-react";
 
 export default function Home() {
   return (
@@ -12,15 +12,21 @@ export default function Home() {
               <Sparkles className="w-6 h-6 text-[#2D2D2D]" />
               <span className="font-serif text-2xl font-bold text-[#2D2D2D]">ResumeAI</span>
             </div>
-            <div className="flex items-center gap-8">
+            <div className="flex items-center gap-6">
               <a href="#features" className="text-[#6B6B6B] hover:text-[#2D2D2D] transition-colors">Features</a>
               <a href="#pricing" className="text-[#6B6B6B] hover:text-[#2D2D2D] transition-colors">Pricing</a>
               <a href="#faq" className="text-[#6B6B6B] hover:text-[#2D2D2D] transition-colors">FAQ</a>
               <Link 
-                href="/dashboard"
-                className="px-6 py-2 bg-[#2D2D2D] text-white rounded-lg hover:bg-[#1a1a1a] transition-colors"
+                href="/login"
+                className="text-[#6B6B6B] hover:text-[#2D2D2D] transition-colors font-medium"
               >
-                Get Started
+                Login
+              </Link>
+              <Link 
+                href="/signup"
+                className="px-6 py-2 bg-[#2D2D2D] text-white rounded-lg hover:bg-[#1a1a1a] transition-colors font-medium"
+              >
+                Sign Up
               </Link>
             </div>
           </div>
@@ -37,7 +43,7 @@ export default function Home() {
             Streamline your job application process with seamless AI automation for every custom resume, perfectly tailored to each job description.
           </p>
           <Link
-            href="/dashboard"
+            href="/signup"
             className="inline-block px-8 py-4 bg-[#2D2D2D] text-white rounded-lg hover:bg-[#1a1a1a] transition-colors text-lg font-medium"
           >
             Start for free
@@ -98,7 +104,7 @@ export default function Home() {
               </div>
               <h3 className="font-serif text-xl font-semibold mb-3">Keyword Optimization</h3>
               <p className="text-[#6B6B6B]">
-                Automatically highlight your most relevant skills and experiences based on the job requirements.
+                Automatically identify and incorporate relevant keywords to pass ATS systems and get your resume in front of hiring managers.
               </p>
             </div>
 
@@ -106,47 +112,21 @@ export default function Home() {
               <div className="w-16 h-16 bg-[#F7F5F3] rounded-xl flex items-center justify-center mx-auto mb-4">
                 <Zap className="w-8 h-8 text-[#2D2D2D]" />
               </div>
-              <h3 className="font-serif text-xl font-semibold mb-3">Instant Generation</h3>
+              <h3 className="font-serif text-xl font-semibold mb-3">Lightning Fast</h3>
               <p className="text-[#6B6B6B]">
-                Get a professionally tailored resume in seconds, not hours. Focus on applying, not formatting.
+                Generate a perfectly tailored resume in seconds, not hours. Apply to more jobs in less time.
               </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Social Proof */}
-      <section className="py-16 px-6 bg-[#F7F5F3]">
-        <div className="container mx-auto max-w-4xl text-center">
-          <p className="text-sm text-[#6B6B6B] mb-4 uppercase tracking-wider">Trusted by job seekers</p>
-          <h2 className="font-serif text-3xl font-bold text-[#2D2D2D] mb-12">
-            Confidence backed by results
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div>
-              <div className="text-4xl font-bold text-[#2D2D2D] mb-2">95%</div>
-              <p className="text-[#6B6B6B]">ATS Pass Rate</p>
-            </div>
-            <div>
-              <div className="text-4xl font-bold text-[#2D2D2D] mb-2">10k+</div>
-              <p className="text-[#6B6B6B]">Resumes Generated</p>
-            </div>
-            <div>
-              <div className="text-4xl font-bold text-[#2D2D2D] mb-2">4.9/5</div>
-              <p className="text-[#6B6B6B]">User Rating</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* Pricing Section */}
-      <section id="pricing" className="py-24 px-6 bg-white">
+      <section id="pricing" className="py-24 px-6">
         <div className="container mx-auto max-w-6xl">
           <div className="text-center mb-16">
-            <p className="text-sm text-[#6B6B6B] mb-2 uppercase tracking-wider">Plans & Pricing</p>
-            <h2 className="font-serif text-4xl font-bold text-[#2D2D2D] mb-4">
-              Choose the perfect plan for your job search
-            </h2>
+            <p className="text-sm text-[#6B6B6B] mb-2 uppercase tracking-wider">Pricing</p>
+            <h2 className="font-serif text-4xl font-bold text-[#2D2D2D] mb-4">Choose your plan</h2>
             <p className="text-[#6B6B6B] max-w-2xl mx-auto">
               Scale your job applications with flexible pricing that grows with your needs. Start free, upgrade when you're ready.
             </p>
@@ -155,22 +135,26 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {/* Free Plan */}
             <div className="border border-[#E5E5E5] rounded-xl p-8 bg-white hover:shadow-lg transition-shadow">
-              <h3 className="font-serif text-2xl font-semibold mb-2">Starter</h3>
-              <p className="text-[#6B6B6B] mb-6">Perfect for individuals testing the waters</p>
+              <h3 className="font-serif text-2xl font-semibold mb-2">Free</h3>
+              <p className="text-[#6B6B6B] mb-6">Perfect for trying out ResumeAI</p>
               <div className="mb-6">
                 <span className="text-5xl font-bold text-[#2D2D2D]">$0</span>
                 <span className="text-[#6B6B6B]"> / month</span>
               </div>
               <Link
-                href="/dashboard"
+                href="/signup"
                 className="block w-full py-3 px-6 bg-[#F7F5F3] text-[#2D2D2D] rounded-lg hover:bg-[#E5E5E5] transition-colors text-center font-medium mb-6"
               >
-                Start for free
+                Get Started
               </Link>
               <ul className="space-y-3">
                 <li className="flex items-start gap-2">
                   <CheckCircle className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
-                  <span className="text-[#6B6B6B]">Up to 3 tailored resumes</span>
+                  <span className="text-[#6B6B6B]">5 tailored resumes per month</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <Clock className="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" />
+                  <span className="text-[#6B6B6B]">1 week data storage</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <CheckCircle className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
@@ -178,36 +162,36 @@ export default function Home() {
                 </li>
                 <li className="flex items-start gap-2">
                   <CheckCircle className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
-                  <span className="text-[#6B6B6B]">Standard templates</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <CheckCircle className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
-                  <span className="text-[#6B6B6B]">Community support</span>
+                  <span className="text-[#6B6B6B]">PDF export</span>
                 </li>
               </ul>
             </div>
 
-            {/* Pro Plan */}
+            {/* Monthly Plan */}
             <div className="border-2 border-[#2D2D2D] rounded-xl p-8 bg-[#2D2D2D] text-white hover:shadow-2xl transition-shadow relative">
               <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-amber-400 text-[#2D2D2D] px-4 py-1 rounded-full text-sm font-semibold">
                 Most Popular
               </div>
-              <h3 className="font-serif text-2xl font-semibold mb-2">Professional</h3>
-              <p className="text-gray-300 mb-6">Advanced features for active job seekers</p>
+              <h3 className="font-serif text-2xl font-semibold mb-2">Monthly</h3>
+              <p className="text-gray-300 mb-6">For active job seekers</p>
               <div className="mb-6">
-                <span className="text-5xl font-bold">$16</span>
+                <span className="text-5xl font-bold">$19</span>
                 <span className="text-gray-300"> / month</span>
               </div>
               <Link
-                href="/dashboard"
+                href="/signup"
                 className="block w-full py-3 px-6 bg-white text-[#2D2D2D] rounded-lg hover:bg-gray-100 transition-colors text-center font-medium mb-6"
               >
-                Get started
+                Subscribe
               </Link>
               <ul className="space-y-3">
                 <li className="flex items-start gap-2">
                   <CheckCircle className="w-5 h-5 text-green-400 mt-0.5 flex-shrink-0" />
                   <span>Unlimited tailored resumes</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <Shield className="w-5 h-5 text-blue-400 mt-0.5 flex-shrink-0" />
+                  <span>Indefinite data storage</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <CheckCircle className="w-5 h-5 text-green-400 mt-0.5 flex-shrink-0" />
@@ -219,57 +203,53 @@ export default function Home() {
                 </li>
                 <li className="flex items-start gap-2">
                   <CheckCircle className="w-5 h-5 text-green-400 mt-0.5 flex-shrink-0" />
-                  <span>Custom templates</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <CheckCircle className="w-5 h-5 text-green-400 mt-0.5 flex-shrink-0" />
                   <span>Cover letter generation</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <CheckCircle className="w-5 h-5 text-green-400 mt-0.5 flex-shrink-0" />
-                  <span>LinkedIn integration</span>
                 </li>
               </ul>
             </div>
 
-            {/* Enterprise Plan */}
-            <div className="border border-[#E5E5E5] rounded-xl p-8 bg-white hover:shadow-lg transition-shadow">
-              <h3 className="font-serif text-2xl font-semibold mb-2">Enterprise</h3>
-              <p className="text-[#6B6B6B] mb-6">For teams and organizations</p>
+            {/* Yearly Plan */}
+            <div className="border border-[#E5E5E5] rounded-xl p-8 bg-white hover:shadow-lg transition-shadow relative">
+              <div className="absolute -top-4 right-4 bg-green-500 text-white px-3 py-1 rounded-full text-xs font-semibold">
+                Save 21%
+              </div>
+              <h3 className="font-serif text-2xl font-semibold mb-2">Yearly</h3>
+              <p className="text-[#6B6B6B] mb-6">Best value for serious job hunters</p>
               <div className="mb-6">
-                <span className="text-5xl font-bold text-[#2D2D2D]">$160</span>
-                <span className="text-[#6B6B6B]"> / year</span>
+                <span className="text-5xl font-bold text-[#2D2D2D]">$15</span>
+                <span className="text-[#6B6B6B]"> / month</span>
+                <div className="text-sm text-[#6B6B6B] mt-1">Billed annually at $180</div>
               </div>
               <Link
-                href="/dashboard"
+                href="/signup"
                 className="block w-full py-3 px-6 bg-[#F7F5F3] text-[#2D2D2D] rounded-lg hover:bg-[#E5E5E5] transition-colors text-center font-medium mb-6"
               >
-                Contact sales
+                Subscribe
               </Link>
               <ul className="space-y-3">
                 <li className="flex items-start gap-2">
                   <CheckCircle className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
-                  <span className="text-[#6B6B6B]">Everything in Professional</span>
+                  <span className="text-[#6B6B6B]">Unlimited tailored resumes</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <Shield className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
+                  <span className="text-[#6B6B6B]">Indefinite data storage</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <CheckCircle className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
-                  <span className="text-[#6B6B6B]">Dedicated account manager</span>
+                  <span className="text-[#6B6B6B]">Advanced AI optimization</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <CheckCircle className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
-                  <span className="text-[#6B6B6B]">24/7 phone support</span>
+                  <span className="text-[#6B6B6B]">Priority support</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <CheckCircle className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
-                  <span className="text-[#6B6B6B]">Custom branding</span>
+                  <span className="text-[#6B6B6B]">Cover letter generation</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <CheckCircle className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
-                  <span className="text-[#6B6B6B]">Advanced analytics</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <CheckCircle className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
-                  <span className="text-[#6B6B6B]">API access</span>
+                  <span className="text-[#6B6B6B]">Early access to new features</span>
                 </li>
               </ul>
             </div>
@@ -278,65 +258,51 @@ export default function Home() {
       </section>
 
       {/* FAQ Section */}
-      <section id="faq" className="py-24 px-6 bg-[#F7F5F3]">
-        <div className="container mx-auto max-w-4xl">
+      <section id="faq" className="py-24 px-6 bg-white">
+        <div className="container mx-auto max-w-3xl">
           <div className="text-center mb-16">
-            <h2 className="font-serif text-4xl font-bold text-[#2D2D2D] mb-4">
-              Frequently Asked Questions
-            </h2>
-            <p className="text-[#6B6B6B]">
-              Everything you need to know about ResumeAI
-            </p>
+            <p className="text-sm text-[#6B6B6B] mb-2 uppercase tracking-wider">FAQ</p>
+            <h2 className="font-serif text-4xl font-bold text-[#2D2D2D]">Frequently asked questions</h2>
           </div>
 
-          <div className="space-y-4">
-            <details className="group bg-white rounded-lg border border-[#E5E5E5] p-6">
-              <summary className="flex justify-between items-center cursor-pointer list-none font-semibold text-[#2D2D2D]">
-                How does the AI resume tailoring work?
-                <span className="text-[#999] group-open:rotate-180 transition-transform">▼</span>
+          <div className="space-y-6">
+            <details className="group bg-[#F7F5F3] rounded-lg p-6">
+              <summary className="font-semibold text-[#2D2D2D] cursor-pointer list-none flex justify-between items-center">
+                How does the AI tailoring work?
+                <span className="text-[#999] group-open:rotate-180 transition-transform"></span>
               </summary>
               <p className="mt-4 text-[#6B6B6B]">
-                Our AI analyzes the job description you provide and compares it with your experience, skills, and achievements. It then optimizes your resume by highlighting the most relevant information, using job-specific keywords, and restructuring content to match what employers are looking for.
+                Our AI analyzes the job description you provide and automatically adjusts your resume content, highlighting relevant skills and experience that match the position requirements.
               </p>
             </details>
 
-            <details className="group bg-white rounded-lg border border-[#E5E5E5] p-6">
-              <summary className="flex justify-between items-center cursor-pointer list-none font-semibold text-[#2D2D2D]">
-                Can I integrate ResumeAI with my existing tools?
-                <span className="text-[#999] group-open:rotate-180 transition-transform">▼</span>
+            <details className="group bg-[#F7F5F3] rounded-lg p-6">
+              <summary className="font-semibold text-[#2D2D2D] cursor-pointer list-none flex justify-between items-center">
+                What happens to my data after 1 week on the free plan?
+                <span className="text-[#999] group-open:rotate-180 transition-transform"></span>
               </summary>
               <p className="mt-4 text-[#6B6B6B]">
-                Yes! Professional and Enterprise plans include integrations with LinkedIn, allowing you to import your profile data directly. Enterprise plans also offer API access for custom integrations.
+                On the free plan, your uploaded documents and generated resumes are automatically deleted after 1 week. You can download your resumes before then. Paid plans offer indefinite storage.
               </p>
             </details>
 
-            <details className="group bg-white rounded-lg border border-[#E5E5E5] p-6">
-              <summary className="flex justify-between items-center cursor-pointer list-none font-semibold text-[#2D2D2D]">
-                What kind of support do you provide?
-                <span className="text-[#999] group-open:rotate-180 transition-transform">▼</span>
+            <details className="group bg-[#F7F5F3] rounded-lg p-6">
+              <summary className="font-semibold text-[#2D2D2D] cursor-pointer list-none flex justify-between items-center">
+                Can I cancel my subscription anytime?
+                <span className="text-[#999] group-open:rotate-180 transition-transform"></span>
               </summary>
               <p className="mt-4 text-[#6B6B6B]">
-                Starter plan users get community support. Professional users receive priority email support with response times under 24 hours. Enterprise customers get 24/7 phone support and a dedicated account manager.
+                Yes! You can cancel your subscription at any time. Your access will continue until the end of your billing period.
               </p>
             </details>
 
-            <details className="group bg-white rounded-lg border border-[#E5E5E5] p-6">
-              <summary className="flex justify-between items-center cursor-pointer list-none font-semibold text-[#2D2D2D]">
-                Is my data secure with ResumeAI?
-                <span className="text-[#999] group-open:rotate-180 transition-transform">▼</span>
+            <details className="group bg-[#F7F5F3] rounded-lg p-6">
+              <summary className="font-semibold text-[#2D2D2D] cursor-pointer list-none flex justify-between items-center">
+                Do you offer refunds?
+                <span className="text-[#999] group-open:rotate-180 transition-transform"></span>
               </summary>
               <p className="mt-4 text-[#6B6B6B]">
-                Absolutely. We use industry-standard encryption for all data storage and transmission. Your resume data is stored securely in Supabase with row-level security, and we never share your information with third parties.
-              </p>
-            </details>
-
-            <details className="group bg-white rounded-lg border border-[#E5E5E5] p-6">
-              <summary className="flex justify-between items-center cursor-pointer list-none font-semibold text-[#2D2D2D]">
-                How do I get started with ResumeAI?
-                <span className="text-[#999] group-open:rotate-180 transition-transform">▼</span>
-              </summary>
-              <p className="mt-4 text-[#6B6B6B]">
-                Simply click "Start for free" to access the dashboard. You can either upload an existing resume or manually enter your information. Then paste a job description and let our AI generate a tailored resume in seconds!
+                We offer a 7-day money-back guarantee on all paid plans. If you're not satisfied, contact us for a full refund.
               </p>
             </details>
           </div>
@@ -344,17 +310,17 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-24 px-6 bg-white">
+      <section className="py-24 px-6 bg-[#2D2D2D] text-white">
         <div className="container mx-auto max-w-4xl text-center">
-          <h2 className="font-serif text-4xl font-bold text-[#2D2D2D] mb-4">
-            Ready to transform your job search?
+          <h2 className="font-serif text-4xl font-bold mb-6">
+            Ready to land your dream job?
           </h2>
-          <p className="text-xl text-[#6B6B6B] mb-8">
-            Join thousands of job seekers streamlining their applications, optimizing their resumes, and landing interviews with AI-powered insights.
+          <p className="text-xl text-gray-300 mb-8">
+            Join thousands of job seekers who have successfully tailored their resumes with ResumeAI.
           </p>
           <Link
-            href="/dashboard"
-            className="inline-block px-8 py-4 bg-[#2D2D2D] text-white rounded-lg hover:bg-[#1a1a1a] transition-colors text-lg font-medium"
+            href="/signup"
+            className="inline-block px-8 py-4 bg-white text-[#2D2D2D] rounded-lg hover:bg-gray-100 transition-colors text-lg font-medium"
           >
             Start for free
           </Link>
@@ -364,47 +330,14 @@ export default function Home() {
       {/* Footer */}
       <footer className="border-t border-[#E5E5E5] bg-white py-12 px-6">
         <div className="container mx-auto max-w-6xl">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
-            <div>
-              <div className="flex items-center gap-2 mb-4">
-                <Sparkles className="w-6 h-6 text-[#2D2D2D]" />
-                <span className="font-serif text-xl font-bold text-[#2D2D2D]">ResumeAI</span>
-              </div>
-              <p className="text-[#6B6B6B] text-sm">
-                AI-powered resume tailoring made effortless
-              </p>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Sparkles className="w-5 h-5 text-[#2D2D2D]" />
+              <span className="font-serif text-xl font-bold text-[#2D2D2D]">ResumeAI</span>
             </div>
-            
-            <div>
-              <h4 className="font-semibold text-[#2D2D2D] mb-4">Product</h4>
-              <ul className="space-y-2 text-sm text-[#6B6B6B]">
-                <li><Link href="/dashboard" className="hover:text-[#2D2D2D]">Dashboard</Link></li>
-                <li><a href="#features" className="hover:text-[#2D2D2D]">Features</a></li>
-                <li><a href="#pricing" className="hover:text-[#2D2D2D]">Pricing</a></li>
-              </ul>
-            </div>
-
-            <div>
-              <h4 className="font-semibold text-[#2D2D2D] mb-4">Company</h4>
-              <ul className="space-y-2 text-sm text-[#6B6B6B]">
-                <li><a href="#" className="hover:text-[#2D2D2D]">About us</a></li>
-                <li><a href="#" className="hover:text-[#2D2D2D]">Careers</a></li>
-                <li><a href="#" className="hover:text-[#2D2D2D]">Contact</a></li>
-              </ul>
-            </div>
-
-            <div>
-              <h4 className="font-semibold text-[#2D2D2D] mb-4">Resources</h4>
-              <ul className="space-y-2 text-sm text-[#6B6B6B]">
-                <li><a href="#" className="hover:text-[#2D2D2D]">Documentation</a></li>
-                <li><a href="#" className="hover:text-[#2D2D2D]">Support</a></li>
-                <li><a href="#faq" className="hover:text-[#2D2D2D]">FAQ</a></li>
-              </ul>
-            </div>
-          </div>
-
-          <div className="pt-8 border-t border-[#E5E5E5] text-center text-sm text-[#6B6B6B]">
-            <p>© 2026 ResumeAI. All rights reserved.</p>
+            <p className="text-[#6B6B6B] text-sm">
+               2026 ResumeAI. All rights reserved.
+            </p>
           </div>
         </div>
       </footer>

@@ -219,7 +219,7 @@ Return a properly formatted JSON object with this exact structure:
 Focus on making the resume ATS-friendly while showcasing the candidate's unique value proposition for this specific role.`;
 
     // Call Gemini AI
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
     
     const result = await model.generateContent(prompt);
     const response = await result.response;

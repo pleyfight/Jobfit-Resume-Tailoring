@@ -1,49 +1,53 @@
-'use client';
+﻿'use client';
 
-import { Download, RefreshCw, Edit } from 'lucide-react';
+import { useState } from 'react';
+import { Download, Copy, CheckCircle } from 'lucide-react';
+import { jsPDF } from 'jspdf';
 
 interface ResumeViewerProps {
   resume: any;
 }
 
 export function ResumeViewer({ resume }: ResumeViewerProps) {
-  const handleDownload = () => {
-    // Create a formatted text version of the resume
+  const [copied, setCopied] = useState(false);
+
+  const getPlainTextResume = () => {
     let content = '';
     
-    // Header
-    content += '='.repeat(80) + '\n';
-    content += 'TAILORED RESUME\n';
-    content += '='.repeat(80) + '\n\n';
+    // Name/Header (if available from profile)
+    if (resume.name) {
+      content += `${resume.name.toUpperCase()}\n`;
+      content += ''.repeat(50) + '\n\n';
+    }
     
     // Summary
     if (resume.summary) {
       content += 'PROFESSIONAL SUMMARY\n';
-      content += '-'.repeat(80) + '\n';
+      content += ''.repeat(30) + '\n';
       content += resume.summary + '\n\n';
     }
     
     // Work Experience
     if (resume.workExperiences && resume.workExperiences.length > 0) {
       content += 'WORK EXPERIENCE\n';
-      content += '-'.repeat(80) + '\n';
+      content += ''.repeat(30) + '\n';
       resume.workExperiences.forEach((exp: any) => {
-        content += `\n${exp.jobTitle} at ${exp.company}\n`;
+        content += `\n${exp.jobTitle} | ${exp.company}\n`;
         if (exp.location) content += `${exp.location}\n`;
-        content += `${exp.startDate} - ${exp.endDate}\n\n`;
+        content += `${exp.startDate} - ${exp.endDate}\n`;
         if (exp.highlights && exp.highlights.length > 0) {
           exp.highlights.forEach((highlight: string) => {
-            content += `• ${highlight}\n`;
+            content += ` ${highlight}\n`;
           });
         }
-        content += '\n';
       });
+      content += '\n';
     }
     
     // Skills
     if (resume.skills) {
-      content += '\nSKILLS\n';
-      content += '-'.repeat(80) + '\n';
+      content += 'SKILLS\n';
+      content += ''.repeat(30) + '\n';
       if (resume.skills.technical && resume.skills.technical.length > 0) {
         content += `Technical: ${resume.skills.technical.join(', ')}\n`;
       }
@@ -58,46 +62,171 @@ export function ResumeViewer({ resume }: ResumeViewerProps) {
     
     // Education
     if (resume.education && resume.education.length > 0) {
-      content += '\nEDUCATION\n';
-      content += '-'.repeat(80) + '\n';
+      content += 'EDUCATION\n';
+      content += ''.repeat(30) + '\n';
       resume.education.forEach((edu: any) => {
-        content += `\n${edu.degree} in ${edu.field}\n`;
+        content += `${edu.degree} in ${edu.field}\n`;
         content += `${edu.institution}\n`;
-        content += `Graduated: ${edu.graduationDate}\n`;
+        if (edu.graduationDate) content += `Graduated: ${edu.graduationDate}\n`;
+        content += '\n';
       });
     }
     
-    // Match Score & Insights
-    if (resume.matchScore) {
-      content += '\n\n' + '='.repeat(80) + '\n';
-      content += `MATCH SCORE: ${resume.matchScore}%\n`;
-      content += '='.repeat(80) + '\n';
-      
-      if (resume.keyStrengths && resume.keyStrengths.length > 0) {
-        content += '\nKEY STRENGTHS:\n';
-        resume.keyStrengths.forEach((strength: string) => {
-          content += `✓ ${strength}\n`;
-        });
-      }
-      
-      if (resume.recommendations && resume.recommendations.length > 0) {
-        content += '\nRECOMMENDATIONS:\n';
-        resume.recommendations.forEach((rec: string) => {
-          content += `→ ${rec}\n`;
-        });
-      }
+    return content;
+  };
+
+  const handleCopy = async () => {
+    const text = getPlainTextResume();
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 3000);
+    } catch (err) {
+      console.error('Failed to copy:', err);
     }
-    
-    // Create download
-    const blob = new Blob([content], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `tailored-resume-${Date.now()}.txt`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+  };
+
+  const handleDownloadPDF = () => {
+    const doc = new jsPDF();
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const margin = 20;
+    const maxWidth = pageWidth - margin * 2;
+    let y = 25;
+
+    // Helper function to add text with word wrap
+    const addText = (text: string, fontSize: number, isBold: boolean = false, color: number[] = [45, 45, 45]) => {
+      doc.setFontSize(fontSize);
+      doc.setFont('helvetica', isBold ? 'bold' : 'normal');
+      doc.setTextColor(color[0], color[1], color[2]);
+      const lines = doc.splitTextToSize(text, maxWidth);
+      lines.forEach((line: string) => {
+        if (y > 280) {
+          doc.addPage();
+          y = 20;
+        }
+        doc.text(line, margin, y);
+        y += fontSize * 0.5;
+      });
+    };
+
+    const addSectionHeader = (title: string) => {
+      y += 5;
+      doc.setFontSize(12);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(45, 45, 45);
+      doc.text(title, margin, y);
+      y += 2;
+      doc.setDrawColor(45, 45, 45);
+      doc.line(margin, y, pageWidth - margin, y);
+      y += 8;
+    };
+
+    // Header - Name
+    if (resume.name) {
+      doc.setFontSize(24);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(45, 45, 45);
+      doc.text(resume.name.toUpperCase(), margin, y);
+      y += 12;
+    } else {
+      doc.setFontSize(24);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(45, 45, 45);
+      doc.text('PROFESSIONAL RESUME', margin, y);
+      y += 12;
+    }
+
+    // Professional Summary
+    if (resume.summary) {
+      addSectionHeader('PROFESSIONAL SUMMARY');
+      addText(resume.summary, 10);
+      y += 5;
+    }
+
+    // Work Experience
+    if (resume.workExperiences && resume.workExperiences.length > 0) {
+      addSectionHeader('WORK EXPERIENCE');
+      resume.workExperiences.forEach((exp: any) => {
+        // Job Title and Company
+        doc.setFontSize(11);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(45, 45, 45);
+        doc.text(`${exp.jobTitle}`, margin, y);
+        y += 5;
+        
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(107, 107, 107);
+        doc.text(`${exp.company}${exp.location ? ' | ' + exp.location : ''} | ${exp.startDate} - ${exp.endDate}`, margin, y);
+        y += 6;
+
+        // Highlights
+        if (exp.highlights && exp.highlights.length > 0) {
+          exp.highlights.forEach((highlight: string) => {
+            if (y > 280) {
+              doc.addPage();
+              y = 20;
+            }
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'normal');
+            doc.setTextColor(45, 45, 45);
+            const bulletLines = doc.splitTextToSize(' ' + highlight, maxWidth - 5);
+            bulletLines.forEach((line: string) => {
+              doc.text(line, margin + 3, y);
+              y += 5;
+            });
+          });
+        }
+        y += 3;
+      });
+    }
+
+    // Skills
+    if (resume.skills) {
+      addSectionHeader('SKILLS');
+      const allSkills = [];
+      if (resume.skills.technical) allSkills.push(...resume.skills.technical);
+      if (resume.skills.tools) allSkills.push(...resume.skills.tools);
+      if (resume.skills.soft) allSkills.push(...resume.skills.soft);
+      
+      if (allSkills.length > 0) {
+        addText(allSkills.join('  '), 10);
+      }
+      y += 3;
+    }
+
+    // Education
+    if (resume.education && resume.education.length > 0) {
+      addSectionHeader('EDUCATION');
+      resume.education.forEach((edu: any) => {
+        doc.setFontSize(11);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(45, 45, 45);
+        doc.text(`${edu.degree} in ${edu.field}`, margin, y);
+        y += 5;
+        
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(107, 107, 107);
+        doc.text(`${edu.institution}${edu.graduationDate ? ' | Graduated: ' + edu.graduationDate : ''}`, margin, y);
+        y += 8;
+      });
+    }
+
+    // Match Score Footer
+    if (resume.matchScore) {
+      y += 5;
+      doc.setDrawColor(200, 200, 200);
+      doc.line(margin, y, pageWidth - margin, y);
+      y += 8;
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(34, 139, 34);
+      doc.text(`Match Score: ${resume.matchScore}%`, margin, y);
+    }
+
+    // Save the PDF
+    doc.save(`tailored-resume-${Date.now()}.pdf`);
   };
 
   return (
@@ -109,52 +238,78 @@ export function ResumeViewer({ resume }: ResumeViewerProps) {
         </h3>
         <div className="flex gap-2">
           <button
-            onClick={handleDownload}
+            onClick={handleCopy}
             className="px-3 py-2 text-sm bg-white border border-[#D1D1D1] rounded-lg hover:bg-[#F7F5F3] transition-colors flex items-center gap-2"
           >
+            {copied ? (
+              <>
+                <CheckCircle className="w-4 h-4 text-green-600" />
+                Copied!
+              </>
+            ) : (
+              <>
+                <Copy className="w-4 h-4" />
+                Copy Text
+              </>
+            )}
+          </button>
+          <button
+            onClick={handleDownloadPDF}
+            className="px-3 py-2 text-sm bg-[#2D2D2D] text-white rounded-lg hover:bg-[#1a1a1a] transition-colors flex items-center gap-2"
+          >
             <Download className="w-4 h-4" />
-            Download
+            Download PDF
           </button>
         </div>
       </div>
 
-      {/* Resume Content - A4 Aspect Ratio */}
-      <div className="p-8 max-h-[800px] overflow-y-auto bg-white">
-        {/* Match Score Badge */}
-        {resume.matchScore && (
-          <div className="mb-6 flex items-center justify-between p-4 bg-green-50 border border-green-200 rounded-lg">
+      {/* Match Score Banner */}
+      {resume.matchScore && (
+        <div className="p-4 bg-gradient-to-r from-green-50 to-emerald-50 border-b border-green-100">
+          <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-green-700 font-medium">Match Score</p>
-              <p className="text-2xl font-bold text-green-900">{resume.matchScore}%</p>
+              <span className="text-sm font-medium text-green-800">Match Score</span>
+              <div className="flex items-center gap-2 mt-1">
+                <div className="w-32 h-2 bg-green-200 rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-green-600 rounded-full transition-all duration-500"
+                    style={{ width: `${resume.matchScore}%` }}
+                  />
+                </div>
+                <span className="text-lg font-bold text-green-700">{resume.matchScore}%</span>
+              </div>
             </div>
             {resume.keyStrengths && resume.keyStrengths.length > 0 && (
-              <div className="text-right">
-                <p className="text-xs text-green-700 mb-1">Top Strengths:</p>
-                <div className="flex flex-wrap gap-1 justify-end">
-                  {resume.keyStrengths.slice(0, 3).map((strength: string, idx: number) => (
-                    <span key={idx} className="px-2 py-1 text-xs bg-green-100 text-green-800 rounded">
-                      {strength}
-                    </span>
-                  ))}
-                </div>
+              <div className="flex gap-2">
+                {resume.keyStrengths.slice(0, 3).map((strength: string, idx: number) => (
+                  <span 
+                    key={idx}
+                    className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full font-medium"
+                  >
+                    {strength}
+                  </span>
+                ))}
               </div>
             )}
           </div>
-        )}
+        </div>
+      )}
 
-        {/* Professional Summary */}
+      {/* Resume Content */}
+      <div className="p-6 space-y-6">
+        {/* Summary */}
         {resume.summary && (
-          <div className="mb-6">
-            <h4 className="font-serif text-lg font-semibold text-[#2D2D2D] mb-2 border-b-2 border-[#2D2D2D] pb-1">
+          <div>
+            <h4 className="font-serif text-lg font-semibold text-[#2D2D2D] mb-3 border-b-2 border-[#2D2D2D] pb-1">
               Professional Summary
             </h4>
-            <p className="text-[#2D2D2D] leading-relaxed">{resume.summary}</p>
+            <p className="text-[#4A4A4A] leading-relaxed">{resume.summary}</p>
           </div>
         )}
 
         {/* Work Experience */}
         {resume.workExperiences && resume.workExperiences.length > 0 && (
-          <div className="mb-6">
+          <div>
             <h4 className="font-serif text-lg font-semibold text-[#2D2D2D] mb-3 border-b-2 border-[#2D2D2D] pb-1">
               Work Experience
             </h4>
@@ -165,12 +320,12 @@ export function ResumeViewer({ resume }: ResumeViewerProps) {
                     <h5 className="font-semibold text-[#2D2D2D]">{exp.jobTitle}</h5>
                     <span className="text-sm text-[#6B6B6B]">{exp.startDate} - {exp.endDate}</span>
                   </div>
-                  <p className="text-[#6B6B6B] mb-2">{exp.company}{exp.location ? ` • ${exp.location}` : ''}</p>
+                  <p className="text-[#6B6B6B] mb-2">{exp.company}{exp.location ? `  ${exp.location}` : ''}</p>
                   {exp.highlights && exp.highlights.length > 0 && (
                     <ul className="space-y-1">
                       {exp.highlights.map((highlight: string, hIdx: number) => (
-                        <li key={hIdx} className="text-sm text-[#2D2D2D] flex gap-2">
-                          <span className="text-[#6B6B6B] mt-1">•</span>
+                        <li key={hIdx} className="text-[#4A4A4A] text-sm flex gap-2">
+                          <span className="text-[#2D2D2D]"></span>
                           <span>{highlight}</span>
                         </li>
                       ))}
@@ -184,54 +339,33 @@ export function ResumeViewer({ resume }: ResumeViewerProps) {
 
         {/* Skills */}
         {resume.skills && (
-          <div className="mb-6">
+          <div>
             <h4 className="font-serif text-lg font-semibold text-[#2D2D2D] mb-3 border-b-2 border-[#2D2D2D] pb-1">
               Skills
             </h4>
-            <div className="space-y-2">
-              {resume.skills.technical && resume.skills.technical.length > 0 && (
-                <div>
-                  <span className="font-medium text-[#2D2D2D]">Technical:</span>
-                  <div className="flex flex-wrap gap-2 mt-1">
-                    {resume.skills.technical.map((skill: string, idx: number) => (
-                      <span key={idx} className="px-3 py-1 bg-[#F7F5F3] text-[#2D2D2D] rounded-full text-sm">
-                        {skill}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
-              {resume.skills.tools && resume.skills.tools.length > 0 && (
-                <div>
-                  <span className="font-medium text-[#2D2D2D]">Tools:</span>
-                  <div className="flex flex-wrap gap-2 mt-1">
-                    {resume.skills.tools.map((tool: string, idx: number) => (
-                      <span key={idx} className="px-3 py-1 bg-[#F7F5F3] text-[#2D2D2D] rounded-full text-sm">
-                        {tool}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
-              {resume.skills.soft && resume.skills.soft.length > 0 && (
-                <div>
-                  <span className="font-medium text-[#2D2D2D]">Soft Skills:</span>
-                  <div className="flex flex-wrap gap-2 mt-1">
-                    {resume.skills.soft.map((skill: string, idx: number) => (
-                      <span key={idx} className="px-3 py-1 bg-[#F7F5F3] text-[#2D2D2D] rounded-full text-sm">
-                        {skill}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
+            <div className="flex flex-wrap gap-2">
+              {resume.skills.technical && resume.skills.technical.map((skill: string, idx: number) => (
+                <span key={`tech-${idx}`} className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">
+                  {skill}
+                </span>
+              ))}
+              {resume.skills.tools && resume.skills.tools.map((skill: string, idx: number) => (
+                <span key={`tool-${idx}`} className="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm">
+                  {skill}
+                </span>
+              ))}
+              {resume.skills.soft && resume.skills.soft.map((skill: string, idx: number) => (
+                <span key={`soft-${idx}`} className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">
+                  {skill}
+                </span>
+              ))}
             </div>
           </div>
         )}
 
         {/* Education */}
         {resume.education && resume.education.length > 0 && (
-          <div className="mb-6">
+          <div>
             <h4 className="font-serif text-lg font-semibold text-[#2D2D2D] mb-3 border-b-2 border-[#2D2D2D] pb-1">
               Education
             </h4>
@@ -239,7 +373,10 @@ export function ResumeViewer({ resume }: ResumeViewerProps) {
               {resume.education.map((edu: any, idx: number) => (
                 <div key={idx}>
                   <h5 className="font-semibold text-[#2D2D2D]">{edu.degree} in {edu.field}</h5>
-                  <p className="text-[#6B6B6B]">{edu.institution} • {edu.graduationDate}</p>
+                  <p className="text-[#6B6B6B]">{edu.institution}</p>
+                  {edu.graduationDate && (
+                    <p className="text-sm text-[#999]">Graduated: {edu.graduationDate}</p>
+                  )}
                 </div>
               ))}
             </div>
@@ -248,12 +385,12 @@ export function ResumeViewer({ resume }: ResumeViewerProps) {
 
         {/* Recommendations */}
         {resume.recommendations && resume.recommendations.length > 0 && (
-          <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg">
-            <h5 className="font-semibold text-amber-900 mb-2">Recommendations</h5>
+          <div className="mt-6 p-4 bg-amber-50 rounded-lg border border-amber-200">
+            <h4 className="font-medium text-amber-800 mb-2"> AI Recommendations</h4>
             <ul className="space-y-1">
               {resume.recommendations.map((rec: string, idx: number) => (
-                <li key={idx} className="text-sm text-amber-800 flex gap-2">
-                  <span>→</span>
+                <li key={idx} className="text-sm text-amber-700 flex gap-2">
+                  <span></span>
                   <span>{rec}</span>
                 </li>
               ))}
