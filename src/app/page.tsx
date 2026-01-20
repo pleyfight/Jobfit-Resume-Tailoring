@@ -10,7 +10,7 @@ export default function Home() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Sparkles className="w-6 h-6 text-[#2D2D2D]" />
-              <span className="font-serif text-2xl font-bold text-[#2D2D2D]">ResumeAI</span>
+              <span className="font-serif text-2xl font-bold text-[#2D2D2D]">Sleek</span>
             </div>
             <div className="flex items-center gap-6">
               <a href="#features" className="text-[#6B6B6B] hover:text-[#2D2D2D] transition-colors">Features</a>
@@ -37,7 +37,7 @@ export default function Home() {
       <section className="py-24 px-6">
         <div className="container mx-auto max-w-4xl text-center">
           <h1 className="font-serif text-6xl font-bold text-[#2D2D2D] mb-6 leading-tight">
-            Effortless AI-powered resume tailoring by ResumeAI
+            Effortless AI-powered resume tailoring by Sleek
           </h1>
           <p className="text-xl text-[#6B6B6B] mb-8 max-w-2xl mx-auto">
             Streamline your job application process with seamless AI automation for every custom resume, perfectly tailored to each job description.
@@ -136,7 +136,7 @@ export default function Home() {
             {/* Free Plan */}
             <div className="border border-[#E5E5E5] rounded-xl p-8 bg-white hover:shadow-lg transition-shadow">
               <h3 className="font-serif text-2xl font-semibold mb-2">Free</h3>
-              <p className="text-[#6B6B6B] mb-6">Perfect for trying out ResumeAI</p>
+              <p className="text-[#6B6B6B] mb-6">Perfect for trying out Sleek</p>
               <div className="mb-6">
                 <span className="text-5xl font-bold text-[#2D2D2D]">$0</span>
                 <span className="text-[#6B6B6B]"> / month</span>
@@ -316,7 +316,7 @@ export default function Home() {
             Ready to land your dream job?
           </h2>
           <p className="text-xl text-gray-300 mb-8">
-            Join thousands of job seekers who have successfully tailored their resumes with ResumeAI.
+            Join thousands of job seekers who have successfully tailored their resumes with Sleek.
           </p>
           <Link
             href="/signup"
@@ -333,10 +333,10 @@ export default function Home() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Sparkles className="w-5 h-5 text-[#2D2D2D]" />
-              <span className="font-serif text-xl font-bold text-[#2D2D2D]">ResumeAI</span>
+              <span className="font-serif text-xl font-bold text-[#2D2D2D]">Sleek</span>
             </div>
             <p className="text-[#6B6B6B] text-sm">
-               2026 ResumeAI. All rights reserved.
+               2026 Sleek. All rights reserved.
             </p>
           </div>
         </div>
@@ -344,3 +344,4 @@ export default function Home() {
     </div>
   );
 }
+

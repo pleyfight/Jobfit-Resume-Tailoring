@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import { Inter, Instrument_Serif } from "next/font/google";
 import "./globals.css";
 
@@ -14,7 +14,7 @@ const instrumentSerif = Instrument_Serif({
 });
 
 export const metadata: Metadata = {
-  title: "ResumeAI - Tailor Your Resume with AI",
+  title: "Sleek - AI-Powered Resume Tailoring",
   description: "Create ATS-optimized, tailored resumes using AI",
 };
 
@@ -33,3 +33,4 @@ export default function RootLayout({
     </html>
   );
 }
+
