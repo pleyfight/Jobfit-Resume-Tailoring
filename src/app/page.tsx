@@ -1,7 +1,17 @@
 import Link from "next/link";
 import { Sparkles, Target, FileText, CheckCircle, Shield, Clock, ArrowRight } from "lucide-react";
 
+const isSupabaseConfigured = !!(
+  process.env.NEXT_PUBLIC_SUPABASE_URL &&
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY &&
+  !process.env.NEXT_PUBLIC_SUPABASE_URL.includes("placeholder") &&
+  !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY.includes("placeholder")
+);
+
 export default function Home() {
+  const startHref = isSupabaseConfigured ? "/signup" : "/dashboard";
+  const startLabel = isSupabaseConfigured ? "Start free" : "Start demo";
+
   return (
     <div className="min-h-screen text-[#1B1712]">
       <div className="relative overflow-hidden">
@@ -26,10 +36,10 @@ export default function Home() {
               <Link href="/login" className="hover:text-[#1B1712]">Login</Link>
             </div>
             <Link
-              href="/signup"
+              href={startHref}
               className="inline-flex items-center gap-2 rounded-full border border-[#1B1712] bg-[#1B1712] px-5 py-2 text-sm font-semibold text-[#FFFCF7] transition hover:-translate-y-0.5 hover:bg-[#2C241C]"
             >
-              Start free
+              {startLabel}
               <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
@@ -50,10 +60,10 @@ export default function Home() {
               </p>
               <div className="mt-8 flex flex-col gap-4 sm:flex-row">
                 <Link
-                  href="/signup"
+                  href={startHref}
                   className="inline-flex items-center justify-center gap-2 rounded-full bg-[#1B1712] px-6 py-3 text-sm font-semibold text-[#FFFCF7] transition hover:-translate-y-0.5 hover:bg-[#2C241C]"
                 >
-                  Start tailoring
+                  {startLabel}
                   <ArrowRight className="h-4 w-4" />
                 </Link>
                 <Link
@@ -63,6 +73,11 @@ export default function Home() {
                   See the process
                 </Link>
               </div>
+              {!isSupabaseConfigured && (
+                <p className="mt-3 text-xs text-[#6F6257]">
+                  Demo mode is active. Configure Supabase to enable real accounts and saved data.
+                </p>
+              )}
               <div className="mt-10 grid gap-6 sm:grid-cols-3">
                 {[
                   { label: "Minutes to a tailored draft", value: "< 3" },
@@ -259,10 +274,10 @@ export default function Home() {
                 </p>
               </div>
               <Link
-                href="/signup"
+                href={startHref}
                 className="inline-flex items-center gap-2 rounded-full bg-[#FFFCF7] px-6 py-3 text-sm font-semibold text-[#1B1712] transition hover:-translate-y-0.5"
               >
-                Start free
+                {startLabel}
                 <ArrowRight className="h-4 w-4" />
               </Link>
             </div>

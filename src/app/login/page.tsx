@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Sparkles, Mail, Lock, ArrowRight, Shield, Clock, CheckCircle } from "lucide-react";
-import { supabase } from "@/lib/supabase";
+import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -15,15 +15,24 @@ export default function LoginPage() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const isDemoMode = !isSupabaseConfigured;
+  const startHref = isDemoMode ? "/dashboard" : "/signup";
+  const startLabel = isDemoMode ? "Start demo" : "Start free";
 
   useEffect(() => {
+    if (isDemoMode || !supabase) return;
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) router.replace("/dashboard");
     });
-  }, [router]);
+  }, [router, isDemoMode]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (isDemoMode || !supabase) {
+      setErrorMessage("Supabase is not configured. Continue in demo mode instead.");
+      return;
+    }
 
     setIsSubmitting(true);
     setErrorMessage(null);
@@ -39,6 +48,10 @@ export default function LoginPage() {
       return;
     }
 
+    router.push("/dashboard");
+  };
+
+  const handleDemo = () => {
     router.push("/dashboard");
   };
 
@@ -60,10 +73,10 @@ export default function LoginPage() {
               </div>
             </Link>
             <Link
-              href="/signup"
+              href={startHref}
               className="inline-flex items-center gap-2 rounded-full border border-[#1B1712] bg-[#1B1712] px-5 py-2 text-sm font-semibold text-[#FFFCF7] transition hover:-translate-y-0.5 hover:bg-[#2C241C]"
             >
-              Start free
+              {startLabel}
               <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
@@ -110,6 +123,12 @@ export default function LoginPage() {
                 </div>
               )}
 
+              {isDemoMode && (
+                <div className="mb-5 rounded-2xl border border-[#E4D7CA] bg-[#F7F2EA] p-3 text-sm text-[#6F6257]">
+                  Supabase is not configured, so login is disabled. You can explore in demo mode.
+                </div>
+              )}
+
               <form onSubmit={handleSubmit} className="space-y-5">
                 <div>
                   <label htmlFor="email" className="block text-sm font-medium text-[#1B1712]">
@@ -123,6 +142,7 @@ export default function LoginPage() {
                       required
                       value={formData.email}
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      disabled={isDemoMode}
                       className="w-full rounded-2xl border border-[#D9CBBE] bg-[#F7F2EA] py-3 pl-11 pr-4 text-sm text-[#1B1712] focus:border-[#8B5B2B] focus:outline-none focus:ring-2 focus:ring-[#8B5B2B]/20"
                       placeholder="you@example.com"
                     />
@@ -144,6 +164,7 @@ export default function LoginPage() {
                       required
                       value={formData.password}
                       onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                      disabled={isDemoMode}
                       className="w-full rounded-2xl border border-[#D9CBBE] bg-[#F7F2EA] py-3 pl-11 pr-4 text-sm text-[#1B1712] focus:border-[#8B5B2B] focus:outline-none focus:ring-2 focus:ring-[#8B5B2B]/20"
                       placeholder=""
                     />
@@ -155,6 +176,7 @@ export default function LoginPage() {
                     type="checkbox"
                     checked={formData.remember}
                     onChange={(e) => setFormData({ ...formData, remember: e.target.checked })}
+                    disabled={isDemoMode}
                     className="rounded border-[#D9CBBE]"
                   />
                   Remember me on this device
@@ -162,7 +184,7 @@ export default function LoginPage() {
 
                 <button
                   type="submit"
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || isDemoMode}
                   className="flex w-full items-center justify-center gap-2 rounded-full bg-[#1B1712] px-6 py-3 text-sm font-semibold text-[#FFFCF7] transition hover:-translate-y-0.5 hover:bg-[#2C241C] disabled:cursor-not-allowed disabled:bg-[#CBB9A9]"
                 >
                   {isSubmitting ? (
@@ -179,6 +201,17 @@ export default function LoginPage() {
                 </button>
               </form>
 
+              {isDemoMode && (
+                <button
+                  type="button"
+                  onClick={handleDemo}
+                  className="mt-4 flex w-full items-center justify-center gap-2 rounded-full border border-[#1B1712] px-6 py-3 text-sm font-semibold text-[#1B1712] transition hover:-translate-y-0.5"
+                >
+                  Continue in demo
+                  <ArrowRight className="h-4 w-4" />
+                </button>
+              )}
+
               <div className="my-6 flex items-center gap-3 text-xs text-[#6F6257]">
                 <div className="h-px flex-1 bg-[#E4D7CA]" />
                 or continue with
@@ -188,21 +221,24 @@ export default function LoginPage() {
               <div className="grid gap-3 sm:grid-cols-3">
                 <button
                   type="button"
-                  onClick={() => alert("Google OAuth will be implemented with backend!")}
+                  onClick={() => setErrorMessage("OAuth requires Supabase configuration.")}
+                  disabled={isDemoMode}
                   className="rounded-2xl border border-[#D9CBBE] bg-[#FFFCF7] px-3 py-2 text-xs font-semibold text-[#1B1712] transition hover:-translate-y-0.5"
                 >
                   Google
                 </button>
                 <button
                   type="button"
-                  onClick={() => alert("Apple OAuth will be implemented with backend!")}
+                  onClick={() => setErrorMessage("OAuth requires Supabase configuration.")}
+                  disabled={isDemoMode}
                   className="rounded-2xl border border-[#D9CBBE] bg-[#FFFCF7] px-3 py-2 text-xs font-semibold text-[#1B1712] transition hover:-translate-y-0.5"
                 >
                   Apple
                 </button>
                 <button
                   type="button"
-                  onClick={() => alert("LinkedIn OAuth will be implemented with backend!")}
+                  onClick={() => setErrorMessage("OAuth requires Supabase configuration.")}
+                  disabled={isDemoMode}
                   className="rounded-2xl border border-[#D9CBBE] bg-[#FFFCF7] px-3 py-2 text-xs font-semibold text-[#1B1712] transition hover:-translate-y-0.5"
                 >
                   LinkedIn

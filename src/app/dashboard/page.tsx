@@ -7,7 +7,7 @@ import { Sparkles, ArrowRight, CreditCard, History, Trash2 } from "lucide-react"
 import { IngestionForm } from "@/components/IngestionForm";
 import { JobTargetInput } from "@/components/JobTargetInput";
 import { ResumeViewer } from "@/components/ResumeViewer";
-import { supabase } from "@/lib/supabase";
+import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 
 interface FormData {
   profile: {
@@ -34,6 +34,7 @@ export default function DashboardPage() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isAuthChecked, setIsAuthChecked] = useState(false);
   const [userEmail, setUserEmail] = useState<string | null>(null);
+  const isDemoMode = !isSupabaseConfigured;
 
   const handleFormDataChange = useCallback((data: FormData) => {
     setFormData(data);
@@ -43,6 +44,13 @@ export default function DashboardPage() {
     let isMounted = true;
 
     const checkAuth = async () => {
+      if (isDemoMode || !supabase) {
+        if (!isMounted) return;
+        setUserEmail("demo@local");
+        setIsAuthChecked(true);
+        return;
+      }
+
       const { data: { session } } = await supabase.auth.getSession();
 
       if (!isMounted) return;
@@ -58,18 +66,29 @@ export default function DashboardPage() {
 
     checkAuth();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (!session) router.replace("/login");
-    });
+    if (!isDemoMode && supabase) {
+      const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+        if (!session) router.replace("/login");
+      });
+
+      return () => {
+        isMounted = false;
+        subscription.unsubscribe();
+      };
+    }
 
     return () => {
       isMounted = false;
-      subscription.unsubscribe();
     };
-  }, [router]);
+  }, [router, isDemoMode]);
 
   const handleSignOut = async () => {
-    await supabase.auth.signOut();
+    if (!isDemoMode && supabase) {
+      await supabase.auth.signOut();
+      router.replace("/login");
+      return;
+    }
+
     router.replace("/login");
   };
 
@@ -83,19 +102,22 @@ export default function DashboardPage() {
     setErrorMessage(null);
 
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      const accessToken = session?.access_token;
+      let accessToken: string | undefined;
+      if (!isDemoMode && supabase) {
+        const { data: { session } } = await supabase.auth.getSession();
+        accessToken = session?.access_token;
 
-      if (!accessToken) {
-        router.replace("/login");
-        return;
+        if (!accessToken) {
+          router.replace("/login");
+          return;
+        }
       }
 
       const response = await fetch("/api/generate", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken}`,
+          ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
         },
         body: JSON.stringify({
           jobDescription,
@@ -185,6 +207,12 @@ export default function DashboardPage() {
             {errorMessage && (
               <div className="mb-6 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
                 {errorMessage}
+              </div>
+            )}
+
+            {isDemoMode && (
+              <div className="mb-6 rounded-2xl border border-[#E4D7CA] bg-[#F7F2EA] p-4 text-sm text-[#6F6257]">
+                Demo mode is active because Supabase is not configured. Data will not be saved.
               </div>
             )}
 

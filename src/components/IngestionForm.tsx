@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Upload, Plus, Trash2, CheckCircle, X } from 'lucide-react';
-import { supabase } from '@/lib/supabase';
+import { supabase, isSupabaseConfigured } from '@/lib/supabase';
 
 interface IngestionFormProps {
   onContextTypeChange: (useDocuments: boolean) => void;
@@ -74,6 +74,7 @@ export function IngestionForm({ onContextTypeChange, useDocuments, onFormDataCha
   const [isManualDragOver, setIsManualDragOver] = useState(false);
   const [showSuccessToast, setShowSuccessToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
+  const isDemoMode = !isSupabaseConfigured;
 
   // Manual entry state
   const [profile, setProfile] = useState({
@@ -146,14 +147,17 @@ export function IngestionForm({ onContextTypeChange, useDocuments, onFormDataCha
     formData.append('file', file);
 
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      const accessToken = session?.access_token;
-      if (!accessToken) throw new Error('Please log in to upload documents.');
+      let accessToken: string | undefined;
+      if (!isDemoMode && supabase) {
+        const { data: { session } } = await supabase.auth.getSession();
+        accessToken = session?.access_token;
+        if (!accessToken) throw new Error('Please log in to upload documents.');
+      }
 
       const response = await fetch('/api/ingest/document', {
         method: 'POST',
         headers: {
-          Authorization: `Bearer ${accessToken}`,
+          ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
         },
         body: formData,
       });
@@ -222,15 +226,18 @@ export function IngestionForm({ onContextTypeChange, useDocuments, onFormDataCha
 
   const handleSaveManual = async () => {
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      const accessToken = session?.access_token;
-      if (!accessToken) throw new Error('Please log in to save your information.');
+      let accessToken: string | undefined;
+      if (!isDemoMode && supabase) {
+        const { data: { session } } = await supabase.auth.getSession();
+        accessToken = session?.access_token;
+        if (!accessToken) throw new Error('Please log in to save your information.');
+      }
 
       const response = await fetch('/api/ingest/manual', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${accessToken}`,
+          ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
         },
         body: JSON.stringify({
           profile,
