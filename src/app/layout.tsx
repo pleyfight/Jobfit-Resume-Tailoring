@@ -1,22 +1,22 @@
 ﻿import type { Metadata } from "next";
-import { Space_Grotesk, Newsreader } from "next/font/google";
+import { Instrument_Serif, Inter } from "next/font/google";
 import "./globals.css";
 
-const spaceGrotesk = Space_Grotesk({
-  variable: "--font-body",
+const instrumentSerif = Instrument_Serif({
+  variable: "--font-serif",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: ["400"],
 });
 
-const newsreader = Newsreader({
-  variable: "--font-display",
+const inter = Inter({
+  variable: "--font-sans",
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
 });
 
 export const metadata: Metadata = {
-  title: "Sleek - AI-Powered Resume Tailoring",
-  description: "Create ATS-optimized, tailored resumes using AI",
+  title: "Jobfit - Resume Tailoring That Works",
+  description: "Tailor your resume to every job. Highlight what you've actually done, nothing more.",
 };
 
 export default function RootLayout({
@@ -26,9 +26,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body
-        className={`${spaceGrotesk.variable} ${newsreader.variable} antialiased`}
-      >
+      <body className={`${instrumentSerif.variable} ${inter.variable} antialiased`}>
         {children}
       </body>
     </html>

@@ -26,6 +26,7 @@ export default function UpdatePasswordPage() {
     let isMounted = true;
 
     const checkSession = async () => {
+      if (!supabase) return;
       const { data: { session } } = await supabase.auth.getSession();
       if (!isMounted) return;
       setHasSession(!!session);

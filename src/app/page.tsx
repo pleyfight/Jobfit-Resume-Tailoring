@@ -1,5 +1,8 @@
+"use client";
+
 import Link from "next/link";
-import { Sparkles, Target, FileText, CheckCircle, Shield, Clock, ArrowRight } from "lucide-react";
+import { ArrowRight, Menu, X } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 
 const isSupabaseConfigured = !!(
   process.env.NEXT_PUBLIC_SUPABASE_URL &&
@@ -8,291 +11,392 @@ const isSupabaseConfigured = !!(
   !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY.includes("placeholder")
 );
 
-export default function Home() {
-  const startHref = isSupabaseConfigured ? "/signup" : "/dashboard";
-  const startLabel = isSupabaseConfigured ? "Start free" : "Start demo";
+const TAGLINE = "We highlight your story. Every detail matters.";
+
+const services = [
+  {
+    title: "Resume Tailoring",
+    description: "Map your experience to every job description. We highlight what matters, nothing false.",
+  },
+  {
+    title: "Achievement Extraction",
+    description: "Surface the impact you\'ve made. Numbers, outcomes, real results from your history.",
+  },
+  {
+    title: "ATS Optimization",
+    description: "Clean formatting that passes screening systems while staying true to your story.",
+  },
+  {
+    title: "Skill Alignment",
+    description: "Match your existing skills to the exact tools and keywords each role requires.",
+  },
+  {
+    title: "Professional Export",
+    description: "Download polished PDFs ready to send. Your resume, your way.",
+  },
+  {
+    title: "Version Management",
+    description: "Keep every tailored version organized. Track what you sent where.",
+  },
+];
+
+const caseStudies = [
+  {
+    title: "From Career Change to Offer",
+    role: "Product Manager",
+    location: "NYC, USA",
+    highlight: "3 applications → 2 interviews → 1 offer",
+  },
+  {
+    title: "Return to Work Success",
+    role: "Software Engineer",
+    location: "SF, USA",
+    highlight: "Layoff recovery in 4 weeks",
+  },
+  {
+    title: "Industry Pivot",
+    role: "Marketing Lead",
+    location: "Austin, USA",
+    highlight: "New field, same impact story",
+  },
+  {
+    title: "Entry Level Breakthrough",
+    role: "Designer",
+    location: "London, UK",
+    highlight: "First role with polished resume",
+  },
+];
+
+const AnimatedCircles = () => {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+
+    let animationId: number;
+    let time = 0;
+
+    const circles = [
+      { radius: 80, offsetX: 0.3, offsetY: 0.3, speed: 0.002, opacity: 0.15 },
+      { radius: 120, offsetX: 0.7, offsetY: 0.4, speed: 0.0015, opacity: 0.1 },
+      { radius: 60, offsetX: 0.5, offsetY: 0.7, speed: 0.0025, opacity: 0.12 },
+    ];
+
+    const animate = () => {
+      time += 1;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = "#2D2D2D";
+
+      circles.forEach((circle) => {
+        const x =
+          canvas.width * circle.offsetX +
+          Math.sin(time * circle.speed) * circle.radius * 0.5;
+        const y =
+          canvas.height * circle.offsetY +
+          Math.cos(time * circle.speed * 0.7) * circle.radius * 0.3;
+
+        ctx.globalAlpha = circle.opacity;
+        ctx.beginPath();
+        ctx.arc(x, y, circle.radius, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      ctx.globalAlpha = 1;
+      animationId = requestAnimationFrame(animate);
+    };
+
+    animate();
+
+    const handleResize = () => {
+      canvas.width = canvas.offsetWidth;
+      canvas.height = canvas.offsetHeight;
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      cancelAnimationFrame(animationId);
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
 
   return (
-    <div className="min-h-screen text-[#1B1712]">
-      <div className="relative overflow-hidden">
-        <div className="pointer-events-none absolute -top-32 left-1/2 h-[520px] w-[520px] -translate-x-1/2 rounded-full bg-[#C29B6F]/20 blur-3xl" />
-        <div className="pointer-events-none absolute -right-24 top-24 h-[420px] w-[420px] rounded-full bg-[#6E7B6C]/15 blur-3xl" />
+    <canvas
+      ref={canvasRef}
+      className="pointer-events-none absolute inset-0 h-full w-full"
+    />
+  );
+};
 
-        <nav className="relative z-10 border-b border-[#E4D7CA] bg-[#FFFCF7]/80 backdrop-blur">
-          <div className="container mx-auto flex items-center justify-between px-6 py-4">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full border border-[#D8CBBE] bg-[#FFF9F1]">
-                <Sparkles className="h-5 w-5 text-[#8B5B2B]" />
-              </div>
-              <div>
-                <div className="font-serif text-xl font-semibold tracking-tight">Sleek</div>
-                <div className="text-xs uppercase tracking-[0.2em] text-[#6F6257]">Resume Studio</div>
-              </div>
-            </div>
-            <div className="hidden items-center gap-6 text-sm text-[#6F6257] md:flex">
-              <a href="#features" className="hover:text-[#1B1712]">Features</a>
-              <a href="#workflow" className="hover:text-[#1B1712]">Workflow</a>
-              <a href="#care" className="hover:text-[#1B1712]">Our care</a>
-              <Link href="/login" className="hover:text-[#1B1712]">Login</Link>
-            </div>
-            <Link
-              href={startHref}
-              className="inline-flex items-center gap-2 rounded-full border border-[#1B1712] bg-[#1B1712] px-5 py-2 text-sm font-semibold text-[#FFFCF7] transition hover:-translate-y-0.5 hover:bg-[#2C241C]"
-            >
-              {startLabel}
-              <ArrowRight className="h-4 w-4" />
-            </Link>
+export default function Home() {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const startHref = isSupabaseConfigured ? "/signup" : "/dashboard";
+  const startLabel = isSupabaseConfigured ? "Get started" : "Start demo";
+
+  return (
+    <div className="min-h-screen bg-[#F7F5F3] text-[#2D2D2D]">
+      {/* Navigation */}
+      <nav className="sticky top-0 z-40 border-b border-[#E5E5E5] bg-[#F7F5F3]/95 backdrop-blur">
+        <div className="mx-auto flex max-w-full items-center justify-between px-6 py-4 md:px-12">
+          <div className="text-2xl font-semibold tracking-tight">Jobfit</div>
+
+          {/* Desktop Menu */}
+          <div className="hidden items-center gap-12 text-sm md:flex">
+            <a href="#what-we-do" className="hover:text-[#6B6B6B] transition">
+              What we do
+            </a>
+            <a href="#results" className="hover:text-[#6B6B6B] transition">
+              Results
+            </a>
+            <a href="#process" className="hover:text-[#6B6B6B] transition">
+              Process
+            </a>
           </div>
-        </nav>
 
-        <section className="relative z-10 px-6 pb-16 pt-16 md:pb-24 md:pt-20">
-          <div className="container mx-auto grid max-w-6xl grid-cols-1 gap-12 lg:grid-cols-12">
-            <div className="lg:col-span-7">
-              <div className="inline-flex items-center gap-2 rounded-full border border-[#E4D7CA] bg-[#FFFCF7] px-4 py-2 text-xs uppercase tracking-[0.2em] text-[#6F6257]">
-                Premium, empathetic resume tailoring
-              </div>
-              <h1 className="mt-6 font-serif text-4xl leading-tight md:text-6xl">
-                Tailor every resume with the care a new chapter deserves.
-              </h1>
-              <p className="mt-6 text-lg text-[#6F6257]">
-                Sleek helps new grads and experienced professionals craft a tailored resume for every job description.
-                Bring your story, we shape it with clarity, confidence, and ATS-ready structure.
-              </p>
-              <div className="mt-8 flex flex-col gap-4 sm:flex-row">
-                <Link
-                  href={startHref}
-                  className="inline-flex items-center justify-center gap-2 rounded-full bg-[#1B1712] px-6 py-3 text-sm font-semibold text-[#FFFCF7] transition hover:-translate-y-0.5 hover:bg-[#2C241C]"
-                >
-                  {startLabel}
-                  <ArrowRight className="h-4 w-4" />
-                </Link>
-                <Link
-                  href="#workflow"
-                  className="inline-flex items-center justify-center gap-2 rounded-full border border-[#CBB9A9] bg-[#FFFCF7] px-6 py-3 text-sm font-semibold text-[#1B1712] transition hover:-translate-y-0.5"
-                >
-                  See the process
-                </Link>
-              </div>
-              {!isSupabaseConfigured && (
-                <p className="mt-3 text-xs text-[#6F6257]">
-                  Demo mode is active. Configure Supabase to enable real accounts and saved data.
-                </p>
-              )}
-              <div className="mt-10 grid gap-6 sm:grid-cols-3">
-                {[
-                  { label: "Minutes to a tailored draft", value: "< 3" },
-                  { label: "Resume versions saved", value: "20+" },
-                  { label: "Data privacy by design", value: "Private" },
-                ].map((item) => (
-                  <div
-                    key={item.label}
-                    className="rounded-2xl border border-[#E4D7CA] bg-[#FFFCF7] p-4 shadow-[0_10px_24px_rgba(20,16,12,0.08)]"
-                    style={{ animation: "fade-up 0.8s ease-out", animationFillMode: "both" }}
-                  >
-                    <div className="text-2xl font-semibold">{item.value}</div>
-                    <div className="mt-2 text-xs uppercase tracking-[0.2em] text-[#6F6257]">
-                      {item.label}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
+          {/* Mobile Menu Button */}
+          <button className="md:hidden" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+            {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          </button>
+        </div>
 
-            <div className="lg:col-span-5">
-              <div className="rounded-3xl border border-[#E4D7CA] bg-[#FFFCF7] p-6 shadow-[0_24px_60px_rgba(20,16,12,0.12)]">
-                <div className="flex items-center justify-between text-xs uppercase tracking-[0.2em] text-[#6F6257]">
-                  Resume snapshot
-                  <span className="rounded-full border border-[#E4D7CA] px-3 py-1">Draft</span>
-                </div>
-                <div className="mt-6 space-y-5">
-                  <div>
-                    <div className="text-lg font-semibold">Jordan Lee</div>
-                    <div className="text-sm text-[#6F6257]">Product Analyst | Seattle, WA</div>
-                  </div>
-                  <div className="rounded-2xl border border-[#E4D7CA] bg-[#F7F2EA] p-4">
-                    <div className="text-xs uppercase tracking-[0.2em] text-[#6F6257]">Summary</div>
-                    <p className="mt-3 text-sm text-[#1B1712]">
-                      Analytical operator with 4+ years translating customer data into revenue growth.
-                      Seeking a role focused on experimentation, lifecycle metrics, and cross-team delivery.
-                    </p>
-                  </div>
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-2 text-sm font-semibold">
-                      <Target className="h-4 w-4 text-[#8B5B2B]" />
-                      JD-aligned highlights
-                    </div>
-                    <div className="rounded-2xl border border-[#E4D7CA] bg-[#FFFCF7] p-4 text-sm text-[#6F6257]">
-                      <ul className="space-y-2">
-                        <li>Reduced onboarding time by 32% with a new lifecycle experiment.</li>
-                        <li>Built SQL dashboards to surface retention drop-offs across cohorts.</li>
-                        <li>Partnered with design to ship a new activation flow.</li>
-                      </ul>
-                    </div>
-                  </div>
-                  <div className="rounded-2xl border border-[#E4D7CA] bg-[#F7F2EA] p-4 text-sm">
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs uppercase tracking-[0.2em] text-[#6F6257]">Match score</span>
-                      <span className="text-sm font-semibold text-[#1B1712]">86%</span>
-                    </div>
-                    <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-[#E4D7CA]">
-                      <div className="h-full w-[86%] rounded-full bg-[#8B5B2B]" />
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="mt-6 rounded-2xl border border-[#E4D7CA] bg-[#FFFCF7] p-5 text-sm text-[#6F6257]">
-                Your resume stays private, stored in your own secure workspace.
-              </div>
+        {/* Mobile Menu */}
+        {mobileMenuOpen && (
+          <div className="border-t border-[#E5E5E5] bg-white px-6 py-4 md:hidden">
+            <div className="flex flex-col gap-4 text-sm">
+              <a href="#what-we-do" className="hover:text-[#6B6B6B]">
+                What we do
+              </a>
+              <a href="#results" className="hover:text-[#6B6B6B]">
+                Results
+              </a>
+              <a href="#process" className="hover:text-[#6B6B6B]">
+                Process
+              </a>
             </div>
           </div>
-        </section>
-      </div>
+        )}
+      </nav>
 
-      <section id="features" className="px-6 py-20">
-        <div className="container mx-auto max-w-6xl">
-          <div className="mb-12 flex flex-col gap-4">
-            <p className="text-xs uppercase tracking-[0.2em] text-[#6F6257]">Tailoring features</p>
-            <h2 className="font-serif text-3xl md:text-4xl">
-              A calm, guided workflow built for real job searches.
-            </h2>
-          </div>
-          <div className="grid gap-6 md:grid-cols-3">
-            {[
-              {
-                title: "Human-sounding summaries",
-                description: "Turn your experience into a concise narrative that aligns to the role without losing your voice.",
-                icon: <Sparkles className="h-5 w-5 text-[#8B5B2B]" />,
-              },
-              {
-                title: "ATS-aligned structure",
-                description: "Organize your work history, skills, and results in a format that scanners and hiring managers love.",
-                icon: <FileText className="h-5 w-5 text-[#8B5B2B]" />,
-              },
-              {
-                title: "Private by default",
-                description: "Your documents stay in your own space with secure storage and clear delete controls.",
-                icon: <Shield className="h-5 w-5 text-[#8B5B2B]" />,
-              },
-            ].map((feature) => (
-              <div
-                key={feature.title}
-                className="rounded-3xl border border-[#E4D7CA] bg-[#FFFCF7] p-6 shadow-[0_18px_40px_rgba(20,16,12,0.08)]"
-                style={{ animation: "fade-up 0.9s ease-out", animationFillMode: "both" }}
+      {/* Hero Section */}
+      <section className="relative overflow-hidden px-6 py-32 md:px-12 md:py-48">
+        <div className="pointer-events-none absolute inset-0">
+          <AnimatedCircles />
+        </div>
+
+        <div className="relative z-10 mx-auto max-w-4xl text-center">
+          <div className="space-y-6 md:space-y-8">
+            <h1 className="font-serif text-5xl leading-tight md:text-7xl lg:text-8xl">
+              {TAGLINE}
+            </h1>
+            <p className="mx-auto max-w-2xl text-lg text-[#6B6B6B] md:text-xl">
+              Jobfit helps professionals tailor their resume to match every job they want. We don't fabricate. We highlight what's real.
+            </p>
+            <div className="flex flex-col gap-3 sm:flex-row sm:justify-center md:gap-4">
+              <Link
+                href={startHref}
+                className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#2D2D2D] px-8 py-3 text-sm font-semibold text-white transition hover:bg-[#1a1a1a]"
               >
-                <div className="flex h-11 w-11 items-center justify-center rounded-full border border-[#E4D7CA] bg-[#F7F2EA]">
-                  {feature.icon}
-                </div>
-                <h3 className="mt-5 text-lg font-semibold">{feature.title}</h3>
-                <p className="mt-3 text-sm text-[#6F6257]">{feature.description}</p>
+                {startLabel}
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+              <Link
+                href="/dashboard"
+                className="inline-flex items-center justify-center gap-2 rounded-lg border border-[#D1D1D1] bg-white px-8 py-3 text-sm font-semibold text-[#2D2D2D] transition hover:bg-[#F7F5F3]"
+              >
+                View demo
+              </Link>
+            </div>
+            {!isSupabaseConfigured && (
+              <p className="text-xs text-[#6B6B6B]">Demo mode active. No sign-up required.</p>
+            )}
+          </div>
+        </div>
+      </section>
+
+      {/* Repeating Tagline */}
+      <section className="border-y border-[#E5E5E5] bg-white py-16 md:py-24">
+        <div className="mx-auto max-w-7xl px-6 md:px-12">
+          <p className="font-serif text-3xl md:text-5xl text-center">{TAGLINE}</p>
+        </div>
+      </section>
+
+      {/* What We Do - Services */}
+      <section id="what-we-do" className="px-6 py-32 md:px-12 md:py-48">
+        <div className="mx-auto max-w-7xl">
+          <div className="mb-16 md:mb-24">
+            <p className="text-xs uppercase tracking-[0.35em] text-[#6B6B6B] mb-4">Services</p>
+            <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl">What we do for you</h2>
+          </div>
+
+          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+            {services.map((service, index) => (
+              <div
+                key={service.title}
+                className="rounded-lg border border-[#E5E5E5] bg-white p-6 hover:shadow-md transition"
+              >
+                <div className="text-sm font-semibold text-[#6B6B6B]">{String(index + 1).padStart(2, "0")}</div>
+                <h3 className="mt-4 text-xl font-semibold">{service.title}</h3>
+                <p className="mt-3 text-[#6B6B6B]">{service.description}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      <section id="workflow" className="px-6 pb-20">
-        <div className="container mx-auto max-w-6xl">
-          <div className="rounded-[32px] border border-[#E4D7CA] bg-[#FFFCF7] px-6 py-12 shadow-[0_18px_50px_rgba(20,16,12,0.08)] md:px-12">
-            <div className="grid gap-10 md:grid-cols-3">
-              {[
-                {
-                  title: "Build your profile",
-                  description: "Upload a resume or add experience manually. We organize the details for you.",
-                },
-                {
-                  title: "Paste the job description",
-                  description: "We extract the core skills and priorities from each posting.",
-                },
-                {
-                  title: "Generate and refine",
-                  description: "Get a tailored resume draft and adjust as you go.",
-                },
-              ].map((step, index) => (
-                <div key={step.title} className="space-y-4">
-                  <div className="text-sm font-semibold text-[#8B5B2B]">
-                    Step {index + 1}
-                  </div>
-                  <div className="text-lg font-semibold">{step.title}</div>
-                  <p className="text-sm text-[#6F6257]">{step.description}</p>
-                </div>
-              ))}
-            </div>
-          </div>
+      {/* Repeating Tagline */}
+      <section className="border-y border-[#E5E5E5] bg-white py-16 md:py-24">
+        <div className="mx-auto max-w-7xl px-6 md:px-12">
+          <p className="font-serif text-3xl md:text-5xl text-center">{TAGLINE}</p>
         </div>
       </section>
 
-      <section id="care" className="px-6 pb-20">
-        <div className="container mx-auto max-w-6xl">
-          <div className="grid gap-6 md:grid-cols-2">
-            <div className="rounded-3xl border border-[#E4D7CA] bg-[#F7F2EA] p-8">
-              <h3 className="font-serif text-2xl">Support for every chapter</h3>
-              <p className="mt-4 text-sm text-[#6F6257]">
-                Whether you are just getting started, switching industries, or returning after a layoff,
-                Sleek guides you with a calm, premium workflow that respects your time.
-              </p>
-              <div className="mt-6 flex items-center gap-3 text-sm text-[#1B1712]">
-                <CheckCircle className="h-4 w-4 text-[#8B5B2B]" />
-                Empathetic prompts that highlight your wins.
-              </div>
-              <div className="mt-3 flex items-center gap-3 text-sm text-[#1B1712]">
-                <Clock className="h-4 w-4 text-[#8B5B2B]" />
-                Save time with guided, repeatable workflows.
-              </div>
-            </div>
-            <div className="rounded-3xl border border-[#E4D7CA] bg-[#FFFCF7] p-8">
-              <h3 className="font-serif text-2xl">Thoughtful limits, flexible pricing</h3>
-              <p className="mt-4 text-sm text-[#6F6257]">
-                Start with a generous free tier. When you need more, choose a monthly plan or pay as you go.
-              </p>
-              <div className="mt-6 space-y-3 text-sm text-[#1B1712]">
-                <div className="flex items-center gap-3">
-                  <CheckCircle className="h-4 w-4 text-[#8B5B2B]" />
-                  Free resume drafts each month
-                </div>
-                <div className="flex items-center gap-3">
-                  <CheckCircle className="h-4 w-4 text-[#8B5B2B]" />
-                  Upgrade only when you need more output
-                </div>
-                <div className="flex items-center gap-3">
-                  <CheckCircle className="h-4 w-4 text-[#8B5B2B]" />
-                  Always know what you have left
-                </div>
-              </div>
-            </div>
+      {/* Case Studies Grid */}
+      <section id="results" className="px-6 py-32 md:px-12 md:py-48">
+        <div className="mx-auto max-w-7xl">
+          <div className="mb-16 md:mb-24">
+            <p className="text-xs uppercase tracking-[0.35em] text-[#6B6B6B] mb-4">Results</p>
+            <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl">Resumes that work</h2>
           </div>
-        </div>
-      </section>
 
-      <section className="px-6 pb-24">
-        <div className="container mx-auto max-w-6xl">
-          <div className="rounded-[36px] border border-[#1B1712] bg-[#1B1712] px-8 py-12 text-[#FFFCF7] md:px-16">
-            <div className="flex flex-col items-start gap-6 md:flex-row md:items-center md:justify-between">
-              <div>
-                <h2 className="font-serif text-3xl md:text-4xl">Ready to tailor your next resume?</h2>
-                <p className="mt-3 text-sm text-[#EADFD3]">
-                  A polished resume for every job description, built with care and clarity.
-                </p>
-              </div>
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+            {caseStudies.map((study, i) => (
               <Link
-                href={startHref}
-                className="inline-flex items-center gap-2 rounded-full bg-[#FFFCF7] px-6 py-3 text-sm font-semibold text-[#1B1712] transition hover:-translate-y-0.5"
+                key={i}
+                href="#"
+                className="group rounded-lg border border-[#E5E5E5] bg-white p-6 hover:shadow-lg transition"
               >
-                {startLabel}
+                <p className="text-xs uppercase tracking-[0.3em] text-[#6B6B6B] mb-2">Case Study</p>
+                <h3 className="font-semibold mb-4 group-hover:text-[#6B6B6B] transition">
+                  {study.title}
+                </h3>
+                <div className="space-y-2 text-sm text-[#6B6B6B]">
+                  <p>{study.role}</p>
+                  <p className="text-xs uppercase tracking-[0.2em]">{study.location}</p>
+                  <p className="pt-2 font-semibold text-[#2D2D2D]">{study.highlight}</p>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Repeating Tagline */}
+      <section className="border-y border-[#E5E5E5] bg-white py-16 md:py-24">
+        <div className="mx-auto max-w-7xl px-6 md:px-12">
+          <p className="font-serif text-3xl md:text-5xl text-center">{TAGLINE}</p>
+        </div>
+      </section>
+
+      {/* How It Works */}
+      <section id="process" className="px-6 py-32 md:px-12 md:py-48">
+        <div className="mx-auto max-w-7xl">
+          <div className="mb-16 md:mb-24">
+            <p className="text-xs uppercase tracking-[0.35em] text-[#6B6B6B] mb-4">Process</p>
+            <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl">How it works</h2>
+          </div>
+
+          <div className="grid gap-12 md:grid-cols-3">
+            {[
+              {
+                step: "1",
+                title: "Add your history",
+                desc: "Upload your resume or enter your work, education, and skills.",
+              },
+              {
+                step: "2",
+                title: "Paste the job",
+                desc: "Share the job description. We analyze what they're looking for.",
+              },
+              {
+                step: "3",
+                title: "Get tailored",
+                desc: "See your achievements matched to their needs. Download and send.",
+              },
+            ].map((item) => (
+              <div key={item.step} className="space-y-4">
+                <div className="text-sm font-semibold text-[#6B6B6B]">Step {item.step}</div>
+                <h3 className="text-2xl font-semibold">{item.title}</h3>
+                <p className="text-[#6B6B6B]">{item.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Repeating Tagline */}
+      <section className="border-y border-[#E5E5E5] bg-white py-16 md:py-24">
+        <div className="mx-auto max-w-7xl px-6 md:px-12">
+          <p className="font-serif text-3xl md:text-5xl text-center">{TAGLINE}</p>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="px-6 py-32 md:px-12 md:py-48">
+        <div className="mx-auto max-w-4xl">
+          <div className="space-y-8 text-center">
+            <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl">
+              Ready to highlight your best?
+            </h2>
+            <p className="text-lg text-[#6B6B6B]">
+              Let's get your resume tailored to the role you want.
+            </p>
+            <Link
+              href={startHref}
+              className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#2D2D2D] px-8 py-3 text-sm font-semibold text-white transition hover:bg-[#1a1a1a]"
+            >
+              {startLabel}
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Repeating Tagline */}
+      <section className="border-y border-[#E5E5E5] bg-white py-16 md:py-24">
+        <div className="mx-auto max-w-7xl px-6 md:px-12">
+          <p className="font-serif text-3xl md:text-5xl text-center">{TAGLINE}</p>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="border-t border-[#E5E5E5] bg-white px-6 py-12 md:px-12">
+        <div className="mx-auto max-w-7xl">
+          <div className="grid gap-12 md:grid-cols-3 md:gap-24">
+            <div>
+              <div className="text-2xl font-semibold">Jobfit</div>
+              <p className="mt-2 text-xs uppercase tracking-[0.2em] text-[#6B6B6B]">
+                Resume Tailoring
+              </p>
+            </div>
+            <div>
+              <p className="text-sm text-[#6B6B6B] mb-4">Tell us about your career goals.</p>
+              <Link href="#" className="inline-flex items-center gap-2 text-sm font-semibold hover:text-[#6B6B6B]">
+                Get in touch
                 <ArrowRight className="h-4 w-4" />
               </Link>
             </div>
+            <div className="space-y-3 text-sm text-[#6B6B6B]">
+              <Link href="#" className="block hover:text-[#2D2D2D]">
+                Privacy
+              </Link>
+              <Link href="#" className="block hover:text-[#2D2D2D]">
+                Terms
+              </Link>
+              <Link href="#" className="block hover:text-[#2D2D2D]">
+                Contact
+              </Link>
+            </div>
           </div>
-        </div>
-      </section>
-
-      <footer className="border-t border-[#E4D7CA] bg-[#FFFCF7] px-6 py-10">
-        <div className="container mx-auto flex flex-col items-center justify-between gap-4 text-sm text-[#6F6257] md:flex-row">
-          <div className="flex items-center gap-2">
-            <Sparkles className="h-4 w-4 text-[#8B5B2B]" />
-            <span className="font-serif text-base text-[#1B1712]">Sleek</span>
+          <div className="mt-12 border-t border-[#E5E5E5] pt-8 text-xs uppercase tracking-[0.2em] text-[#6B6B6B]">
+            © 2026 Jobfit. All rights reserved.
           </div>
-          <div>Tailored resumes with premium care.</div>
-          <div>2026 Sleek. All rights reserved.</div>
         </div>
       </footer>
     </div>
