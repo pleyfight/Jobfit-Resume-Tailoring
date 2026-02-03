@@ -1,11 +1,13 @@
 @import "tailwindcss";
 
 :root {
-  --background: #F7F5F3;
-  --foreground: #2D2D2D;
-  --muted: #6B6B6B;
-  --border: #E5E5E5;
-  --border-strong: #D1D1D1;
+  --background: #0a0a0a;
+  --foreground: #ffffff;
+  --muted: #888888;
+  --accent: #ffffff;
+  --border: #1a1a1a;
+  --card: #111111;
+  --card-hover: #1a1a1a;
 }
 
 @theme inline {
@@ -15,8 +17,171 @@
   --font-serif: var(--font-serif);
 }
 
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   background-color: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans), sans-serif;
+}
+
+::selection {
+  background-color: #ffffff;
+  color: #0a0a0a;
+}
+
+/* Smooth scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0a0a0a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #333;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Marquee animation */
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee 30s linear infinite;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+
+/* Fade in animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.8s ease-out forwards;
+}
+
+.animate-fade-in-delay-1 {
+  animation: fadeIn 0.8s ease-out 0.1s forwards;
+  opacity: 0;
+}
+
+.animate-fade-in-delay-2 {
+  animation: fadeIn 0.8s ease-out 0.2s forwards;
+  opacity: 0;
+}
+
+.animate-fade-in-delay-3 {
+  animation: fadeIn 0.8s ease-out 0.3s forwards;
+  opacity: 0;
+}
+
+/* Hover lift effect */
+.hover-lift {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-4px);
+}
+
+/* Link underline animation */
+.link-underline {
+  position: relative;
+}
+
+.link-underline::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background-color: currentColor;
+  transition: width 0.3s ease;
+}
+
+.link-underline:hover::after {
+  width: 100%;
+}
+
+/* Glass effect */
+.glass {
+  background: rgba(17, 17, 17, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+/* Gradient text */
+.gradient-text {
+  background: linear-gradient(135deg, #ffffff 0%, #888888 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Focus styles */
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+}
+
+/* Custom checkbox/toggle styles */
+.toggle-switch {
+  position: relative;
+  width: 48px;
+  height: 24px;
+  background: #222;
+  border-radius: 24px;
+  transition: background 0.3s ease;
+  cursor: pointer;
+}
+
+.toggle-switch.active {
+  background: #ffffff;
+}
+
+.toggle-switch::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 20px;
+  height: 20px;
+  background: #0a0a0a;
+  border-radius: 50%;
+  transition: transform 0.3s ease;
+}
+
+.toggle-switch.active::after {
+  transform: translateX(24px);
+  background: #0a0a0a;
 }

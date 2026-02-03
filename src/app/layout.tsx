@@ -1,6 +1,7 @@
 ﻿import type { Metadata } from "next";
 import { Instrument_Serif, Inter } from "next/font/google";
 import "./globals.css";
+import CustomCursor from "@/components/CustomCursor";
 
 const instrumentSerif = Instrument_Serif({
   variable: "--font-serif",
@@ -27,6 +28,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${instrumentSerif.variable} ${inter.variable} antialiased`}>
+        <CustomCursor />
         {children}
       </body>
     </html>

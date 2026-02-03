@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Sparkles, Mail, Lock, ArrowRight, Shield, Clock, CheckCircle } from "lucide-react";
+import { Sparkles, Mail, Lock, ArrowUpRight, Shield, Clock, CheckCircle } from "lucide-react";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 
 export default function LoginPage() {
@@ -17,7 +17,7 @@ export default function LoginPage() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const isDemoMode = !isSupabaseConfigured;
   const startHref = isDemoMode ? "/dashboard" : "/signup";
-  const startLabel = isDemoMode ? "Start demo" : "Start free";
+  const startLabel = isDemoMode ? "Try demo" : "Sign up";
 
   useEffect(() => {
     if (isDemoMode || !supabase) return;
@@ -56,205 +56,185 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen text-[#1B1712]">
-      <div className="relative overflow-hidden">
-        <div className="pointer-events-none absolute -top-32 left-1/2 h-[520px] w-[520px] -translate-x-1/2 rounded-full bg-[#C29B6F]/20 blur-3xl" />
-        <div className="pointer-events-none absolute -right-24 top-24 h-[420px] w-[420px] rounded-full bg-[#6E7B6C]/15 blur-3xl" />
+    <div className="min-h-screen bg-[#0a0a0a] text-white">
+      {/* Navigation */}
+      <nav className="fixed top-0 left-0 right-0 z-50 glass border-b border-white/10">
+        <div className="mx-auto flex items-center justify-between px-6 py-4 md:px-12">
+          <Link href="/" className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-white/5">
+              <Sparkles className="h-5 w-5 text-white" />
+            </div>
+            <span className="font-serif text-xl">Jobfit</span>
+          </Link>
+          <Link
+            href={startHref}
+            className="flex items-center gap-2 rounded-full border border-white px-6 py-2 text-sm font-medium transition-all hover:bg-white hover:text-black"
+          >
+            {startLabel}
+            <ArrowUpRight className="h-4 w-4" />
+          </Link>
+        </div>
+      </nav>
 
-        <nav className="relative z-10 border-b border-[#E4D7CA] bg-[#FFFCF7]/80 backdrop-blur">
-          <div className="container mx-auto flex items-center justify-between px-6 py-4">
-            <Link href="/" className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full border border-[#D8CBBE] bg-[#FFF9F1]">
-                <Sparkles className="h-5 w-5 text-[#8B5B2B]" />
+      <main className="pt-24 px-6 pb-16 md:px-12">
+        <div className="max-w-6xl mx-auto grid gap-16 lg:grid-cols-2 items-center min-h-[calc(100vh-10rem)]">
+          {/* Left - Marketing */}
+          <div className="space-y-8">
+            <p className="text-xs uppercase tracking-[0.3em] text-white/40">Welcome back</p>
+            <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl leading-[1.1]">
+              Your next<br />
+              <span className="text-white/40">tailored</span><br />
+              resume awaits
+            </h1>
+            <p className="text-lg text-white/50 max-w-md">
+              Log in to continue refining your story and stay ready for every opportunity.
+            </p>
+            <div className="grid gap-3 sm:grid-cols-2">
+              {[
+                { icon: <CheckCircle className="h-4 w-4" />, text: "Private, secure storage" },
+                { icon: <Shield className="h-4 w-4" />, text: "Enterprise-grade security" },
+                { icon: <Clock className="h-4 w-4" />, text: "Resume history on demand" },
+                { icon: <CheckCircle className="h-4 w-4" />, text: "Instant PDF exports" },
+              ].map((item) => (
+                <div key={item.text} className="flex items-center gap-3 text-sm text-white/50">
+                  <span className="text-white/30">{item.icon}</span>
+                  <span>{item.text}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Right - Form */}
+          <div className="rounded-2xl border border-white/10 bg-[#111] p-8 md:p-10">
+            <div className="mb-8">
+              <h2 className="font-serif text-2xl">Log in</h2>
+              <p className="mt-2 text-sm text-white/40">Enter your credentials to continue</p>
+            </div>
+
+            {errorMessage && (
+              <div className="mb-6 rounded-xl border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-400">
+                {errorMessage}
               </div>
+            )}
+
+            {isDemoMode && (
+              <div className="mb-6 rounded-xl border border-white/10 bg-white/5 p-4 text-sm text-white/50">
+                Supabase not configured. Explore in demo mode instead.
+              </div>
+            )}
+
+            <form onSubmit={handleSubmit} className="space-y-5">
               <div>
-                <div className="font-serif text-xl font-semibold tracking-tight">Sleek</div>
-                <div className="text-xs uppercase tracking-[0.2em] text-[#6F6257]">Resume Studio</div>
-              </div>
-            </Link>
-            <Link
-              href={startHref}
-              className="inline-flex items-center gap-2 rounded-full border border-[#1B1712] bg-[#1B1712] px-5 py-2 text-sm font-semibold text-[#FFFCF7] transition hover:-translate-y-0.5 hover:bg-[#2C241C]"
-            >
-              {startLabel}
-              <ArrowRight className="h-4 w-4" />
-            </Link>
-          </div>
-        </nav>
-
-        <main className="relative z-10 px-6 py-14">
-          <div className="container mx-auto grid max-w-6xl gap-12 lg:grid-cols-2">
-            <div className="space-y-8">
-              <div className="inline-flex items-center gap-2 rounded-full border border-[#E4D7CA] bg-[#FFFCF7] px-4 py-2 text-xs uppercase tracking-[0.2em] text-[#6F6257]">
-                Welcome back
-              </div>
-              <h1 className="font-serif text-4xl leading-tight md:text-5xl">
-                Your next tailored resume is waiting.
-              </h1>
-              <p className="text-lg text-[#6F6257]">
-                Log in to keep refining your story, track versions, and stay ready for every opportunity.
-              </p>
-              <div className="grid gap-4 sm:grid-cols-2">
-                {[
-                  { icon: <CheckCircle className="h-4 w-4 text-[#8B5B2B]" />, text: "Private, user-only storage" },
-                  { icon: <Shield className="h-4 w-4 text-[#8B5B2B]" />, text: "OWASP-aligned security" },
-                  { icon: <Clock className="h-4 w-4 text-[#8B5B2B]" />, text: "Save drafts in minutes" },
-                  { icon: <CheckCircle className="h-4 w-4 text-[#8B5B2B]" />, text: "Resume history on demand" },
-                ].map((item) => (
-                  <div key={item.text} className="rounded-2xl border border-[#E4D7CA] bg-[#FFFCF7] p-4 text-sm text-[#1B1712]">
-                    <div className="flex items-center gap-3">
-                      {item.icon}
-                      <span>{item.text}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="rounded-3xl border border-[#E4D7CA] bg-[#FFFCF7] p-8 shadow-[0_20px_50px_rgba(20,16,12,0.12)]">
-              <div className="mb-6">
-                <h2 className="font-serif text-2xl">Log in</h2>
-                <p className="mt-2 text-sm text-[#6F6257]">Use email or a connected provider.</p>
-              </div>
-
-              {errorMessage && (
-                <div className="mb-5 rounded-2xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">
-                  {errorMessage}
-                </div>
-              )}
-
-              {isDemoMode && (
-                <div className="mb-5 rounded-2xl border border-[#E4D7CA] bg-[#F7F2EA] p-3 text-sm text-[#6F6257]">
-                  Supabase is not configured, so login is disabled. You can explore in demo mode.
-                </div>
-              )}
-
-              <form onSubmit={handleSubmit} className="space-y-5">
-                <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-[#1B1712]">
-                    Email Address
-                  </label>
-                  <div className="relative mt-2">
-                    <Mail className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-[#8B7B6C]" />
-                    <input
-                      id="email"
-                      type="email"
-                      required
-                      value={formData.email}
-                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      disabled={isDemoMode}
-                      className="w-full rounded-2xl border border-[#D9CBBE] bg-[#F7F2EA] py-3 pl-11 pr-4 text-sm text-[#1B1712] focus:border-[#8B5B2B] focus:outline-none focus:ring-2 focus:ring-[#8B5B2B]/20"
-                      placeholder="you@example.com"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <div className="flex items-center justify-between text-sm">
-                    <label htmlFor="password" className="font-medium text-[#1B1712]">Password</label>
-                    <Link href="/reset-password" className="text-[#8B5B2B] hover:underline">
-                      Forgot password?
-                    </Link>
-                  </div>
-                  <div className="relative mt-2">
-                    <Lock className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-[#8B7B6C]" />
-                    <input
-                      id="password"
-                      type="password"
-                      required
-                      value={formData.password}
-                      onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                      disabled={isDemoMode}
-                      className="w-full rounded-2xl border border-[#D9CBBE] bg-[#F7F2EA] py-3 pl-11 pr-4 text-sm text-[#1B1712] focus:border-[#8B5B2B] focus:outline-none focus:ring-2 focus:ring-[#8B5B2B]/20"
-                      placeholder=""
-                    />
-                  </div>
-                </div>
-
-                <label className="flex items-center gap-2 text-xs text-[#6F6257]">
-                  <input
-                    type="checkbox"
-                    checked={formData.remember}
-                    onChange={(e) => setFormData({ ...formData, remember: e.target.checked })}
-                    disabled={isDemoMode}
-                    className="rounded border-[#D9CBBE]"
-                  />
-                  Remember me on this device
+                <label htmlFor="email" className="block text-sm text-white/70 mb-2">
+                  Email
                 </label>
-
-                <button
-                  type="submit"
-                  disabled={isSubmitting || isDemoMode}
-                  className="flex w-full items-center justify-center gap-2 rounded-full bg-[#1B1712] px-6 py-3 text-sm font-semibold text-[#FFFCF7] transition hover:-translate-y-0.5 hover:bg-[#2C241C] disabled:cursor-not-allowed disabled:bg-[#CBB9A9]"
-                >
-                  {isSubmitting ? (
-                    <>
-                      <div className="h-4 w-4 animate-spin rounded-full border-2 border-[#FFFCF7] border-t-transparent" />
-                      Logging in...
-                    </>
-                  ) : (
-                    <>
-                      Log in
-                      <ArrowRight className="h-4 w-4" />
-                    </>
-                  )}
-                </button>
-              </form>
-
-              {isDemoMode && (
-                <button
-                  type="button"
-                  onClick={handleDemo}
-                  className="mt-4 flex w-full items-center justify-center gap-2 rounded-full border border-[#1B1712] px-6 py-3 text-sm font-semibold text-[#1B1712] transition hover:-translate-y-0.5"
-                >
-                  Continue in demo
-                  <ArrowRight className="h-4 w-4" />
-                </button>
-              )}
-
-              <div className="my-6 flex items-center gap-3 text-xs text-[#6F6257]">
-                <div className="h-px flex-1 bg-[#E4D7CA]" />
-                or continue with
-                <div className="h-px flex-1 bg-[#E4D7CA]" />
+                <div className="relative">
+                  <Mail className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-white/30" />
+                  <input
+                    id="email"
+                    type="email"
+                    required
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    disabled={isDemoMode}
+                    className="w-full rounded-xl border border-white/10 bg-white/5 py-3 pl-12 pr-4 text-white placeholder:text-white/30 focus:border-white/30 focus:ring-0 transition-colors disabled:opacity-50"
+                    placeholder="you@example.com"
+                  />
+                </div>
               </div>
 
-              <div className="grid gap-3 sm:grid-cols-3">
-                <button
-                  type="button"
-                  onClick={() => setErrorMessage("OAuth requires Supabase configuration.")}
-                  disabled={isDemoMode}
-                  className="rounded-2xl border border-[#D9CBBE] bg-[#FFFCF7] px-3 py-2 text-xs font-semibold text-[#1B1712] transition hover:-translate-y-0.5"
-                >
-                  Google
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setErrorMessage("OAuth requires Supabase configuration.")}
-                  disabled={isDemoMode}
-                  className="rounded-2xl border border-[#D9CBBE] bg-[#FFFCF7] px-3 py-2 text-xs font-semibold text-[#1B1712] transition hover:-translate-y-0.5"
-                >
-                  Apple
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setErrorMessage("OAuth requires Supabase configuration.")}
-                  disabled={isDemoMode}
-                  className="rounded-2xl border border-[#D9CBBE] bg-[#FFFCF7] px-3 py-2 text-xs font-semibold text-[#1B1712] transition hover:-translate-y-0.5"
-                >
-                  LinkedIn
-                </button>
+              <div>
+                <div className="flex items-center justify-between text-sm mb-2">
+                  <label htmlFor="password" className="text-white/70">Password</label>
+                  <Link href="/reset-password" className="text-white/40 hover:text-white transition-colors">
+                    Forgot?
+                  </Link>
+                </div>
+                <div className="relative">
+                  <Lock className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-white/30" />
+                  <input
+                    id="password"
+                    type="password"
+                    required
+                    value={formData.password}
+                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                    disabled={isDemoMode}
+                    className="w-full rounded-xl border border-white/10 bg-white/5 py-3 pl-12 pr-4 text-white placeholder:text-white/30 focus:border-white/30 focus:ring-0 transition-colors disabled:opacity-50"
+                    placeholder="••••••••"
+                  />
+                </div>
               </div>
 
-              <p className="mt-6 text-center text-xs text-[#6F6257]">
-                Don't have an account?{" "}
-                <Link href="/signup" className="font-semibold text-[#8B5B2B] hover:underline">
-                  Sign up for free
-                </Link>
-              </p>
+              <label className="flex items-center gap-2 text-sm text-white/40">
+                <input
+                  type="checkbox"
+                  checked={formData.remember}
+                  onChange={(e) => setFormData({ ...formData, remember: e.target.checked })}
+                  disabled={isDemoMode}
+                  className="rounded border-white/20 bg-white/5"
+                />
+                Remember me
+              </label>
+
+              <button
+                type="submit"
+                disabled={isSubmitting || isDemoMode}
+                className="group w-full flex items-center justify-center gap-2 rounded-full bg-white text-black py-3 text-sm font-medium transition-all hover:bg-white/90 disabled:bg-white/20 disabled:text-white/40 disabled:cursor-not-allowed"
+              >
+                {isSubmitting ? (
+                  <>
+                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-black/30 border-t-black" />
+                    Logging in...
+                  </>
+                ) : (
+                  <>
+                    Log in
+                    <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                  </>
+                )}
+              </button>
+            </form>
+
+            {isDemoMode && (
+              <button
+                type="button"
+                onClick={handleDemo}
+                className="group mt-4 w-full flex items-center justify-center gap-2 rounded-full border border-white/20 py-3 text-sm font-medium text-white/70 transition-all hover:border-white/40 hover:text-white"
+              >
+                Continue in demo
+                <ArrowUpRight className="h-4 w-4" />
+              </button>
+            )}
+
+            <div className="my-8 flex items-center gap-4 text-xs text-white/30">
+              <div className="h-px flex-1 bg-white/10" />
+              or continue with
+              <div className="h-px flex-1 bg-white/10" />
             </div>
+
+            <div className="grid gap-3 sm:grid-cols-3">
+              {['Google', 'Apple', 'LinkedIn'].map((provider) => (
+                <button
+                  key={provider}
+                  type="button"
+                  onClick={() => setErrorMessage("OAuth requires Supabase configuration.")}
+                  disabled={isDemoMode}
+                  className="rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-white/70 transition-all hover:bg-white/10 disabled:opacity-50"
+                >
+                  {provider}
+                </button>
+              ))}
+            </div>
+
+            <p className="mt-8 text-center text-sm text-white/40">
+              Don't have an account?{" "}
+              <Link href="/signup" className="text-white hover:underline">
+                Sign up free
+              </Link>
+            </p>
           </div>
-        </main>
-      </div>
+        </div>
+      </main>
     </div>
   );
 }

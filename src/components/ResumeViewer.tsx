@@ -230,32 +230,32 @@ export function ResumeViewer({ resume }: ResumeViewerProps) {
   };
 
   return (
-    <div className="bg-[#FFFCF7] rounded-3xl shadow-[0_20px_50px_rgba(20,16,12,0.12)] border border-[#E4D7CA] overflow-hidden">
+    <div className="rounded-2xl border border-white/10 bg-[#111] overflow-hidden">
       {/* Header Actions */}
-      <div className="flex items-center justify-between p-4 border-b border-[#E4D7CA] bg-[#F7F2EA]">
-        <h3 className="font-serif text-lg font-semibold text-[#1B1712]">
+      <div className="flex items-center justify-between p-4 border-b border-white/10 bg-white/[0.02]">
+        <h3 className="font-serif text-lg text-white">
           Generated Resume
         </h3>
         <div className="flex gap-2">
           <button
             onClick={handleCopy}
-            className="px-3 py-2 text-sm bg-[#FFFCF7] border border-[#D9CBBE] rounded-full hover:bg-[#F7F2EA] transition-colors flex items-center gap-2"
+            className="px-4 py-2 text-sm bg-white/5 border border-white/10 rounded-full hover:bg-white/10 transition-colors flex items-center gap-2 text-white/70"
           >
             {copied ? (
               <>
-                <CheckCircle className="w-4 h-4 text-[#2F5D3A]" />
+                <CheckCircle className="w-4 h-4 text-green-400" />
                 Copied!
               </>
             ) : (
               <>
                 <Copy className="w-4 h-4" />
-                Copy Text
+                Copy
               </>
             )}
           </button>
           <button
             onClick={handleDownloadPDF}
-            className="px-3 py-2 text-sm bg-[#1B1712] text-white rounded-full hover:bg-[#2C241C] transition-colors flex items-center gap-2"
+            className="px-4 py-2 text-sm bg-white text-black rounded-full hover:bg-white/90 transition-colors flex items-center gap-2"
           >
             <Download className="w-4 h-4" />
             Download PDF
@@ -265,18 +265,18 @@ export function ResumeViewer({ resume }: ResumeViewerProps) {
 
       {/* Match Score Banner */}
       {resume.matchScore && (
-        <div className="p-4 bg-gradient-to-r from-[#F1F6EF] to-[#E6F0EA] border-b border-[#D5E2D8]">
+        <div className="p-4 bg-green-500/10 border-b border-green-500/20">
           <div className="flex items-center justify-between">
             <div>
-              <span className="text-sm font-medium text-[#2F5D3A]">Match Score</span>
-              <div className="flex items-center gap-2 mt-1">
-                <div className="w-32 h-2 bg-[#D5E2D8] rounded-full overflow-hidden">
+              <span className="text-xs uppercase tracking-wider text-green-400/70">Match Score</span>
+              <div className="flex items-center gap-3 mt-1">
+                <div className="w-32 h-1.5 bg-green-500/20 rounded-full overflow-hidden">
                   <div 
-                    className="h-full bg-[#2F5D3A] rounded-full transition-all duration-500"
+                    className="h-full bg-green-400 rounded-full transition-all duration-500"
                     style={{ width: `${resume.matchScore}%` }}
                   />
                 </div>
-                <span className="text-lg font-bold text-[#2F5D3A]">{resume.matchScore}%</span>
+                <span className="text-2xl font-serif text-green-400">{resume.matchScore}%</span>
               </div>
             </div>
             {resume.keyStrengths && resume.keyStrengths.length > 0 && (
@@ -284,7 +284,7 @@ export function ResumeViewer({ resume }: ResumeViewerProps) {
                 {resume.keyStrengths.slice(0, 3).map((strength: string, idx: number) => (
                   <span 
                     key={idx}
-                    className="px-2 py-1 bg-[#E6F0EA] text-[#2F5D3A] text-xs rounded-full font-medium"
+                    className="px-3 py-1 bg-green-500/20 text-green-400 text-xs rounded-full"
                   >
                     {strength}
                   </span>
@@ -300,32 +300,32 @@ export function ResumeViewer({ resume }: ResumeViewerProps) {
         {/* Summary */}
         {resume.summary && (
           <div>
-            <h4 className="font-serif text-lg font-semibold text-[#1B1712] mb-3 border-b-2 border-[#1B1712] pb-1">
+            <h4 className="font-serif text-lg text-white mb-3 pb-2 border-b border-white/10">
               Professional Summary
             </h4>
-            <p className="text-[#4F463E] leading-relaxed">{resume.summary}</p>
+            <p className="text-white/60 leading-relaxed">{resume.summary}</p>
           </div>
         )}
 
         {/* Work Experience */}
         {resume.workExperiences && resume.workExperiences.length > 0 && (
           <div>
-            <h4 className="font-serif text-lg font-semibold text-[#1B1712] mb-3 border-b-2 border-[#1B1712] pb-1">
+            <h4 className="font-serif text-lg text-white mb-3 pb-2 border-b border-white/10">
               Work Experience
             </h4>
             <div className="space-y-4">
               {resume.workExperiences.map((exp: any, idx: number) => (
-                <div key={idx} className="border-l-2 border-[#D9CBBE] pl-4">
+                <div key={idx} className="border-l border-white/20 pl-4">
                   <div className="flex justify-between items-start mb-1">
-                    <h5 className="font-semibold text-[#1B1712]">{exp.jobTitle}</h5>
-                    <span className="text-sm text-[#6F6257]">{exp.startDate} - {exp.endDate}</span>
+                    <h5 className="font-medium text-white">{exp.jobTitle}</h5>
+                    <span className="text-xs text-white/40">{exp.startDate} - {exp.endDate}</span>
                   </div>
-                  <p className="text-[#6F6257] mb-2">{exp.company}{exp.location ? `  ${exp.location}` : ''}</p>
+                  <p className="text-white/40 text-sm mb-2">{exp.company}{exp.location ? ` • ${exp.location}` : ''}</p>
                   {exp.highlights && exp.highlights.length > 0 && (
                     <ul className="space-y-1">
                       {exp.highlights.map((highlight: string, hIdx: number) => (
-                        <li key={hIdx} className="text-[#4F463E] text-sm flex gap-2">
-                          <span className="text-[#1B1712]"></span>
+                        <li key={hIdx} className="text-white/60 text-sm flex gap-2">
+                          <span className="text-white/30">•</span>
                           <span>{highlight}</span>
                         </li>
                       ))}
@@ -340,22 +340,22 @@ export function ResumeViewer({ resume }: ResumeViewerProps) {
         {/* Skills */}
         {resume.skills && (
           <div>
-            <h4 className="font-serif text-lg font-semibold text-[#1B1712] mb-3 border-b-2 border-[#1B1712] pb-1">
+            <h4 className="font-serif text-lg text-white mb-3 pb-2 border-b border-white/10">
               Skills
             </h4>
             <div className="flex flex-wrap gap-2">
               {resume.skills.technical && resume.skills.technical.map((skill: string, idx: number) => (
-                <span key={`tech-${idx}`} className="px-3 py-1 bg-[#E9F1EC] text-[#2F5D3A] rounded-full text-sm">
+                <span key={`tech-${idx}`} className="px-3 py-1 bg-blue-500/20 text-blue-300 rounded-full text-sm">
                   {skill}
                 </span>
               ))}
               {resume.skills.tools && resume.skills.tools.map((skill: string, idx: number) => (
-                <span key={`tool-${idx}`} className="px-3 py-1 bg-[#F3EBDD] text-[#7C5A3B] rounded-full text-sm">
+                <span key={`tool-${idx}`} className="px-3 py-1 bg-amber-500/20 text-amber-300 rounded-full text-sm">
                   {skill}
                 </span>
               ))}
               {resume.skills.soft && resume.skills.soft.map((skill: string, idx: number) => (
-                <span key={`soft-${idx}`} className="px-3 py-1 bg-[#EEF1F5] text-[#3C4A5A] rounded-full text-sm">
+                <span key={`soft-${idx}`} className="px-3 py-1 bg-purple-500/20 text-purple-300 rounded-full text-sm">
                   {skill}
                 </span>
               ))}
@@ -366,16 +366,16 @@ export function ResumeViewer({ resume }: ResumeViewerProps) {
         {/* Education */}
         {resume.education && resume.education.length > 0 && (
           <div>
-            <h4 className="font-serif text-lg font-semibold text-[#1B1712] mb-3 border-b-2 border-[#1B1712] pb-1">
+            <h4 className="font-serif text-lg text-white mb-3 pb-2 border-b border-white/10">
               Education
             </h4>
             <div className="space-y-3">
               {resume.education.map((edu: any, idx: number) => (
                 <div key={idx}>
-                  <h5 className="font-semibold text-[#1B1712]">{edu.degree} in {edu.field}</h5>
-                  <p className="text-[#6F6257]">{edu.institution}</p>
+                  <h5 className="font-medium text-white">{edu.degree} in {edu.field}</h5>
+                  <p className="text-white/40">{edu.institution}</p>
                   {edu.graduationDate && (
-                    <p className="text-sm text-[#8B7B6C]">Graduated: {edu.graduationDate}</p>
+                    <p className="text-sm text-white/30">Graduated: {edu.graduationDate}</p>
                   )}
                 </div>
               ))}
@@ -385,12 +385,12 @@ export function ResumeViewer({ resume }: ResumeViewerProps) {
 
         {/* Recommendations */}
         {resume.recommendations && resume.recommendations.length > 0 && (
-          <div className="mt-6 p-4 bg-[#F7F2EA] rounded-2xl border border-[#E4D7CA]">
-            <h4 className="font-medium text-[#8B5B2B] mb-2">AI Recommendations</h4>
-            <ul className="space-y-1">
+          <div className="mt-6 p-4 bg-amber-500/10 rounded-xl border border-amber-500/20">
+            <h4 className="text-sm uppercase tracking-wider text-amber-400/80 mb-3">AI Recommendations</h4>
+            <ul className="space-y-2">
               {resume.recommendations.map((rec: string, idx: number) => (
-                <li key={idx} className="text-sm text-[#6F6257] flex gap-2">
-                  <span></span>
+                <li key={idx} className="text-sm text-amber-200/70 flex gap-2">
+                  <span className="text-amber-400">→</span>
                   <span>{rec}</span>
                 </li>
               ))}

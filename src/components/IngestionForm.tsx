@@ -263,18 +263,18 @@ export function IngestionForm({ onContextTypeChange, useDocuments, onFormDataCha
   };
 
   return (
-    <div className="bg-[#FFFCF7] rounded-3xl shadow-[0_18px_40px_rgba(20,16,12,0.08)] border border-[#E4D7CA] overflow-hidden relative">
+    <div className="rounded-2xl border border-white/10 bg-[#111] overflow-hidden relative">
       {/* Success Toast */}
       {showSuccessToast && (
-        <div className="absolute top-4 left-4 right-4 z-50 animate-[fade-up_0.4s_ease-out]">
-          <div className="bg-[#FFFCF7] border border-[#E4D7CA] shadow-lg rounded-2xl p-4 flex items-center justify-between">
+        <div className="absolute top-4 left-4 right-4 z-50 animate-fade-in">
+          <div className="bg-[#1a1a1a] border border-white/10 shadow-lg rounded-xl p-4 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <CheckCircle className="w-5 h-5 text-[#8B5B2B]" />
-              <span className="text-sm font-medium text-[#1B1712]">{toastMessage}</span>
+              <CheckCircle className="w-5 h-5 text-green-400" />
+              <span className="text-sm text-white">{toastMessage}</span>
             </div>
             <button
               onClick={() => setShowSuccessToast(false)}
-              className="text-[#8B7B6C] hover:text-[#1B1712]"
+              className="text-white/40 hover:text-white transition-colors"
             >
               <X className="w-4 h-4" />
             </button>
@@ -283,30 +283,30 @@ export function IngestionForm({ onContextTypeChange, useDocuments, onFormDataCha
       )}
 
       {/* Tabs */}
-      <div className="flex border-b border-[#E4D7CA] bg-[#FFF9F1]">
+      <div className="flex border-b border-white/10">
         <button
           onClick={() => handleTabChange('manual')}
-          className={`flex-1 px-6 py-4 font-medium transition-colors ${
+          className={`flex-1 px-6 py-4 text-sm font-medium transition-colors ${
             activeTab === 'manual'
-              ? 'text-[#1B1712] border-b-2 border-[#1B1712]'
-              : 'text-[#8B7B6C] hover:text-[#1B1712]'
+              ? 'text-white border-b-2 border-white bg-white/5'
+              : 'text-white/40 hover:text-white/70'
           }`}
         >
           Manual Entry
         </button>
         <button
           onClick={() => handleTabChange('upload')}
-          className={`flex-1 px-6 py-4 font-medium transition-colors ${
+          className={`flex-1 px-6 py-4 text-sm font-medium transition-colors ${
             activeTab === 'upload'
-              ? 'text-[#1B1712] border-b-2 border-[#1B1712]'
-              : 'text-[#8B7B6C] hover:text-[#1B1712]'
+              ? 'text-white border-b-2 border-white bg-white/5'
+              : 'text-white/40 hover:text-white/70'
           }`}
         >
           Upload Resume
         </button>
       </div>
 
-      <div className="p-6 max-h-[calc(100vh-16rem)] overflow-y-auto">
+      <div className="p-6 max-h-[calc(100vh-20rem)] overflow-y-auto">
         {activeTab === 'upload' ? (
           <div className="space-y-4">
             <div
@@ -316,18 +316,18 @@ export function IngestionForm({ onContextTypeChange, useDocuments, onFormDataCha
               }}
               onDragLeave={() => setIsDragging(false)}
               onDrop={handleDrop}
-              className={`border-2 border-dashed rounded-lg p-12 text-center transition-colors ${
+              className={`border-2 border-dashed rounded-xl p-12 text-center transition-all ${
                 isDragging
-                  ? 'border-[#1B1712] bg-[#F7F2EA]'
-                  : 'border-[#D9CBBE] hover:border-[#8B7B6C]'
+                  ? 'border-white bg-white/5'
+                  : 'border-white/20 hover:border-white/40'
               }`}
             >
-              <Upload className="w-12 h-12 mx-auto mb-4 text-[#8B7B6C]" />
-              <p className="text-[#1B1712] font-medium mb-2">
-                Drop your resume here, or click to browse
+              <Upload className="w-12 h-12 mx-auto mb-4 text-white/30" />
+              <p className="text-white font-medium mb-2">
+                Drop your resume here
               </p>
-              <p className="text-sm text-[#6F6257] mb-4">
-                Supports DOC, DOCX, PDF, TXT, and PAGES files
+              <p className="text-sm text-white/40 mb-4">
+                DOC, DOCX, PDF, TXT, or PAGES
               </p>
               <input
                 type="file"
@@ -341,7 +341,7 @@ export function IngestionForm({ onContextTypeChange, useDocuments, onFormDataCha
               />
               <label
                 htmlFor="file-upload"
-                className="inline-block px-6 py-2 bg-[#1B1712] text-white rounded-lg cursor-pointer hover:bg-[#2C241C] transition-colors"
+                className="inline-block px-6 py-3 bg-white text-black rounded-full cursor-pointer hover:bg-white/90 transition-colors text-sm font-medium"
               >
                 Choose File
               </label>
@@ -350,12 +350,12 @@ export function IngestionForm({ onContextTypeChange, useDocuments, onFormDataCha
             {uploadProgress > 0 && (
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
-                  <span className="text-[#6F6257]">{uploadedFile?.name}</span>
-                  <span className="text-[#1B1712] font-medium">{uploadProgress}%</span>
+                  <span className="text-white/50">{uploadedFile?.name}</span>
+                  <span className="text-white font-medium">{uploadProgress}%</span>
                 </div>
-                <div className="h-2 bg-[#E4D7CA] rounded-full overflow-hidden">
+                <div className="h-1.5 bg-white/10 rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-[#1B1712] transition-all duration-300"
+                    className="h-full bg-white transition-all duration-300"
                     style={{ width: `${uploadProgress}%` }}
                   />
                 </div>
@@ -370,19 +370,19 @@ export function IngestionForm({ onContextTypeChange, useDocuments, onFormDataCha
             onDrop={handleManualDrop}
           >
             {isManualDragOver && (
-              <div className="absolute inset-0 z-20 flex items-center justify-center rounded-2xl bg-[#F7F2EA]/80">
-                <div className="flex flex-col items-center gap-2 text-sm font-semibold text-[#1B1712] animate-[pulse-soft_1.2s_ease-in-out_infinite]">
-                  <Upload className="h-6 w-6 text-[#8B5B2B]" />
-                  Upload resume
+              <div className="absolute inset-0 z-20 flex items-center justify-center rounded-xl bg-[#111]/90 border-2 border-dashed border-white/40">
+                <div className="flex flex-col items-center gap-2 text-sm font-medium text-white">
+                  <Upload className="h-6 w-6" />
+                  Drop to upload
                 </div>
               </div>
             )}
             <div className={`space-y-6 ${isManualDragOver ? 'pointer-events-none opacity-60' : ''}`}>
             {/* Basic Info Accordion */}
             <details className="group" open>
-              <summary className="flex justify-between items-center cursor-pointer list-none font-serif text-lg font-semibold text-[#1B1712] mb-4">
+              <summary className="flex justify-between items-center cursor-pointer list-none text-lg font-serif text-white mb-4">
                 Basic Information
-                <span className="text-[#8B7B6C] group-open:rotate-180 transition-transform"></span>
+                <span className="text-white/30 group-open:rotate-180 transition-transform">▼</span>
               </summary>
               <div className="space-y-4">
                 <input
@@ -390,7 +390,7 @@ export function IngestionForm({ onContextTypeChange, useDocuments, onFormDataCha
                   placeholder="Full Name"
                   value={profile.full_name}
                   onChange={(e) => setProfile({ ...profile, full_name: e.target.value })}
-                  className="w-full px-4 py-2 border border-[#D9CBBE] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8B5B2B]/20 focus:border-[#8B5B2B]"
+                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder:text-white/30 focus:border-white/30 focus:ring-0 transition-colors"
                 />
                 <div className="grid grid-cols-2 gap-4">
                   <input
@@ -398,14 +398,14 @@ export function IngestionForm({ onContextTypeChange, useDocuments, onFormDataCha
                     placeholder="Email"
                     value={profile.email}
                     onChange={(e) => setProfile({ ...profile, email: e.target.value })}
-                    className="px-4 py-2 border border-[#D9CBBE] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8B5B2B]/20 focus:border-[#8B5B2B]"
+                    className="px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder:text-white/30 focus:border-white/30 focus:ring-0 transition-colors"
                   />
                   <input
                     type="tel"
                     placeholder="Phone"
                     value={profile.phone}
                     onChange={(e) => setProfile({ ...profile, phone: e.target.value })}
-                    className="px-4 py-2 border border-[#D9CBBE] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8B5B2B]/20 focus:border-[#8B5B2B]"
+                    className="px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder:text-white/30 focus:border-white/30 focus:ring-0 transition-colors"
                   />
                 </div>
                 <input
@@ -413,40 +413,40 @@ export function IngestionForm({ onContextTypeChange, useDocuments, onFormDataCha
                   placeholder="LinkedIn URL"
                   value={profile.linkedin_url}
                   onChange={(e) => setProfile({ ...profile, linkedin_url: e.target.value })}
-                  className="w-full px-4 py-2 border border-[#D9CBBE] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8B5B2B]/20 focus:border-[#8B5B2B]"
+                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder:text-white/30 focus:border-white/30 focus:ring-0 transition-colors"
                 />
                 <input
                   type="url"
                   placeholder="Portfolio URL"
                   value={profile.portfolio_url}
                   onChange={(e) => setProfile({ ...profile, portfolio_url: e.target.value })}
-                  className="w-full px-4 py-2 border border-[#D9CBBE] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8B5B2B]/20 focus:border-[#8B5B2B]"
+                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder:text-white/30 focus:border-white/30 focus:ring-0 transition-colors"
                 />
                 <textarea
                   placeholder="Professional Summary"
                   value={profile.summary_bio}
                   onChange={(e) => setProfile({ ...profile, summary_bio: e.target.value })}
                   rows={4}
-                  className="w-full px-4 py-2 border border-[#D9CBBE] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8B5B2B]/20 focus:border-[#8B5B2B] resize-none"
+                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder:text-white/30 focus:border-white/30 focus:ring-0 transition-colors resize-none"
                 />
               </div>
             </details>
 
             {/* Work History Accordion */}
             <details className="group">
-              <summary className="flex justify-between items-center cursor-pointer list-none font-serif text-lg font-semibold text-[#1B1712] mb-4">
+              <summary className="flex justify-between items-center cursor-pointer list-none text-lg font-serif text-white mb-4">
                 Work History
-                <span className="text-[#8B7B6C] group-open:rotate-180 transition-transform"></span>
+                <span className="text-white/30 group-open:rotate-180 transition-transform">▼</span>
               </summary>
               <div className="space-y-4">
                 {workExperiences.map((exp, index) => (
-                  <div key={index} className="p-4 border border-[#E4D7CA] rounded-lg space-y-3">
+                  <div key={index} className="p-4 border border-white/10 rounded-xl bg-white/[0.02] space-y-3">
                     <div className="flex justify-between items-center mb-2">
-                      <span className="text-sm font-medium text-[#6F6257]">Position {index + 1}</span>
+                      <span className="text-xs uppercase tracking-wider text-white/40">Position {index + 1}</span>
                       {workExperiences.length > 1 && (
                         <button
                           onClick={() => setWorkExperiences(workExperiences.filter((_, i) => i !== index))}
-                          className="text-red-500 hover:text-red-700"
+                          className="text-red-400/70 hover:text-red-400 transition-colors"
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
@@ -461,7 +461,7 @@ export function IngestionForm({ onContextTypeChange, useDocuments, onFormDataCha
                         updated[index].company = e.target.value;
                         setWorkExperiences(updated);
                       }}
-                      className="w-full px-3 py-2 border border-[#D9CBBE] rounded focus:outline-none focus:ring-2 focus:ring-[#8B5B2B]/20 focus:border-[#8B5B2B]"
+                      className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/30 focus:border-white/30 focus:ring-0 transition-colors"
                     />
                     <input
                       type="text"
@@ -472,7 +472,7 @@ export function IngestionForm({ onContextTypeChange, useDocuments, onFormDataCha
                         updated[index].job_title = e.target.value;
                         setWorkExperiences(updated);
                       }}
-                      className="w-full px-3 py-2 border border-[#D9CBBE] rounded focus:outline-none focus:ring-2 focus:ring-[#8B5B2B]/20 focus:border-[#8B5B2B]"
+                      className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/30 focus:border-white/30 focus:ring-0 transition-colors"
                     />
                     <input
                       type="text"
@@ -483,7 +483,7 @@ export function IngestionForm({ onContextTypeChange, useDocuments, onFormDataCha
                         updated[index].location = e.target.value;
                         setWorkExperiences(updated);
                       }}
-                      className="w-full px-3 py-2 border border-[#D9CBBE] rounded focus:outline-none focus:ring-2 focus:ring-[#8B5B2B]/20 focus:border-[#8B5B2B]"
+                      className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/30 focus:border-white/30 focus:ring-0 transition-colors"
                     />
                     <div className="grid grid-cols-2 gap-3">
                       <input
@@ -495,7 +495,7 @@ export function IngestionForm({ onContextTypeChange, useDocuments, onFormDataCha
                           updated[index].start_date = e.target.value;
                           setWorkExperiences(updated);
                         }}
-                        className="px-3 py-2 border border-[#D9CBBE] rounded focus:outline-none focus:ring-2 focus:ring-[#8B5B2B]/20 focus:border-[#8B5B2B]"
+                        className="px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:border-white/30 focus:ring-0 transition-colors [color-scheme:dark]"
                       />
                       <input
                         type="date"
@@ -507,7 +507,7 @@ export function IngestionForm({ onContextTypeChange, useDocuments, onFormDataCha
                           setWorkExperiences(updated);
                         }}
                         disabled={exp.is_current}
-                        className="px-3 py-2 border border-[#D9CBBE] rounded focus:outline-none focus:ring-2 focus:ring-[#8B5B2B]/20 focus:border-[#8B5B2B] disabled:bg-[#F7F2EA]"
+                        className="px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:border-white/30 focus:ring-0 transition-colors disabled:opacity-40 [color-scheme:dark]"
                       />
                     </div>
                     <label className="flex items-center gap-2 text-sm">
@@ -520,9 +520,9 @@ export function IngestionForm({ onContextTypeChange, useDocuments, onFormDataCha
                           if (e.target.checked) updated[index].end_date = '';
                           setWorkExperiences(updated);
                         }}
-                        className="rounded"
+                        className="rounded border-white/20 bg-white/5 text-white"
                       />
-                      <span className="text-[#6F6257]">I currently work here</span>
+                      <span className="text-white/50">I currently work here</span>
                     </label>
                     <textarea
                       placeholder="Duties (What you did on a daily basis)"
@@ -533,10 +533,10 @@ export function IngestionForm({ onContextTypeChange, useDocuments, onFormDataCha
                         setWorkExperiences(updated);
                       }}
                       rows={3}
-                      className="w-full px-3 py-2 border border-[#D9CBBE] rounded focus:outline-none focus:ring-2 focus:ring-[#8B5B2B]/20 focus:border-[#8B5B2B] resize-none"
+                      className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/30 focus:border-white/30 focus:ring-0 transition-colors resize-none"
                     />
                     <textarea
-                      placeholder=" Key Achievements (I increased X by Y%, Led Z initiative...)"
+                      placeholder="⭐ Key Achievements (I increased X by Y%, Led Z initiative...)"
                       value={exp.achievements}
                       onChange={(e) => {
                         const updated = [...workExperiences];
@@ -544,7 +544,7 @@ export function IngestionForm({ onContextTypeChange, useDocuments, onFormDataCha
                         setWorkExperiences(updated);
                       }}
                       rows={3}
-                      className="w-full px-3 py-2 border-2 border-amber-300 bg-amber-50 rounded focus:outline-none focus:ring-2 focus:ring-amber-500 resize-none placeholder:text-amber-700"
+                      className="w-full px-3 py-2 bg-amber-500/10 border border-amber-500/30 rounded-lg text-white placeholder:text-amber-300/50 focus:border-amber-500/50 focus:ring-0 transition-colors resize-none"
                     />
                   </div>
                 ))}
@@ -559,7 +559,7 @@ export function IngestionForm({ onContextTypeChange, useDocuments, onFormDataCha
                     duties: '',
                     achievements: '',
                   }])}
-                  className="w-full py-2 border-2 border-dashed border-[#D9CBBE] rounded-lg text-[#6F6257] hover:border-[#1B1712] hover:text-[#1B1712] transition-colors flex items-center justify-center gap-2"
+                  className="w-full py-3 border-2 border-dashed border-white/20 rounded-xl text-white/50 hover:border-white/40 hover:text-white/70 transition-colors flex items-center justify-center gap-2"
                 >
                   <Plus className="w-4 h-4" />
                   Add Another Position
@@ -569,15 +569,15 @@ export function IngestionForm({ onContextTypeChange, useDocuments, onFormDataCha
 
             {/* Skills */}
             <details className="group">
-              <summary className="flex justify-between items-center cursor-pointer list-none font-serif text-lg font-semibold text-[#1B1712] mb-4">
+              <summary className="flex justify-between items-center cursor-pointer list-none text-lg font-serif text-white mb-4">
                 Skills & Education
-                <span className="text-[#8B7B6C] group-open:rotate-180 transition-transform"></span>
+                <span className="text-white/30 group-open:rotate-180 transition-transform">▼</span>
               </summary>
               <div className="space-y-4">
                 <div className="space-y-3">
-                  <h4 className="font-medium text-[#1B1712]">Education</h4>
+                  <h4 className="text-sm uppercase tracking-wider text-white/40">Education</h4>
                   {educations.map((edu, index) => (
-                    <div key={index} className="p-4 border border-[#E4D7CA] rounded-lg space-y-3">
+                    <div key={index} className="p-4 border border-white/10 rounded-xl bg-white/[0.02] space-y-3">
                       <input
                         type="text"
                         placeholder="Institution"
@@ -587,7 +587,7 @@ export function IngestionForm({ onContextTypeChange, useDocuments, onFormDataCha
                           updated[index].institution = e.target.value;
                           setEducations(updated);
                         }}
-                        className="w-full px-3 py-2 border border-[#D9CBBE] rounded focus:outline-none focus:ring-2 focus:ring-[#8B5B2B]/20 focus:border-[#8B5B2B]"
+                        className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/30 focus:border-white/30 focus:ring-0 transition-colors"
                       />
                       <div className="grid grid-cols-2 gap-3">
                         <input
@@ -599,7 +599,7 @@ export function IngestionForm({ onContextTypeChange, useDocuments, onFormDataCha
                             updated[index].degree = e.target.value;
                             setEducations(updated);
                           }}
-                          className="px-3 py-2 border border-[#D9CBBE] rounded focus:outline-none focus:ring-2 focus:ring-[#8B5B2B]/20 focus:border-[#8B5B2B]"
+                          className="px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/30 focus:border-white/30 focus:ring-0 transition-colors"
                         />
                         <input
                           type="text"
@@ -610,7 +610,7 @@ export function IngestionForm({ onContextTypeChange, useDocuments, onFormDataCha
                             updated[index].field_of_study = e.target.value;
                             setEducations(updated);
                           }}
-                          className="px-3 py-2 border border-[#D9CBBE] rounded focus:outline-none focus:ring-2 focus:ring-[#8B5B2B]/20 focus:border-[#8B5B2B]"
+                          className="px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/30 focus:border-white/30 focus:ring-0 transition-colors"
                         />
                       </div>
                     </div>
@@ -618,7 +618,7 @@ export function IngestionForm({ onContextTypeChange, useDocuments, onFormDataCha
                 </div>
 
                 <div className="space-y-3">
-                  <h4 className="font-medium text-[#1B1712]">Skills</h4>
+                  <h4 className="text-sm uppercase tracking-wider text-white/40">Skills</h4>
                   {skills.map((skill, index) => (
                     <div key={index} className="flex gap-3 items-center">
                       <input
@@ -630,7 +630,7 @@ export function IngestionForm({ onContextTypeChange, useDocuments, onFormDataCha
                           updated[index].name = e.target.value;
                           setSkills(updated);
                         }}
-                        className="flex-1 px-3 py-2 border border-[#D9CBBE] rounded focus:outline-none focus:ring-2 focus:ring-[#8B5B2B]/20 focus:border-[#8B5B2B]"
+                        className="flex-1 px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/30 focus:border-white/30 focus:ring-0 transition-colors"
                       />
                       <select
                         value={skill.category}
@@ -639,7 +639,7 @@ export function IngestionForm({ onContextTypeChange, useDocuments, onFormDataCha
                           updated[index].category = e.target.value as 'Hard' | 'Soft' | 'Tool';
                           setSkills(updated);
                         }}
-                        className="px-3 py-2 border border-[#D9CBBE] rounded focus:outline-none focus:ring-2 focus:ring-[#8B5B2B]/20 focus:border-[#8B5B2B]"
+                        className="px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:border-white/30 focus:ring-0 transition-colors"
                       >
                         <option value="Hard">Technical</option>
                         <option value="Tool">Tool</option>
@@ -649,7 +649,7 @@ export function IngestionForm({ onContextTypeChange, useDocuments, onFormDataCha
                   ))}
                   <button
                     onClick={() => setSkills([...skills, { name: '', category: 'Hard', proficiency: 50 }])}
-                    className="w-full py-2 border-2 border-dashed border-[#D9CBBE] rounded-lg text-[#6F6257] hover:border-[#1B1712] hover:text-[#1B1712] transition-colors flex items-center justify-center gap-2"
+                    className="w-full py-3 border-2 border-dashed border-white/20 rounded-xl text-white/50 hover:border-white/40 hover:text-white/70 transition-colors flex items-center justify-center gap-2"
                   >
                     <Plus className="w-4 h-4" />
                     Add Skill
@@ -660,7 +660,7 @@ export function IngestionForm({ onContextTypeChange, useDocuments, onFormDataCha
 
             <button
               onClick={handleSaveManual}
-              className="w-full py-3 bg-[#1B1712] text-white rounded-full hover:bg-[#2C241C] transition-colors font-medium"
+              className="w-full py-3 bg-white text-black rounded-full hover:bg-white/90 transition-colors font-medium"
             >
               Save Information
             </button>
